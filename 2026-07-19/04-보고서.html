@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아이디어샘물 · 2026-07-19 일일보고</title>
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #e4e0d8;
+    --accent: #2b4c7e;
+    --warn: #b8451f;
+    --warn-bg: #fdf3ec;
+    --ok: #2f6a3a;
+    --ok-bg: #eaf1e8;
+    --ghost: #a8a8a8;
+    --hi-bg: #f5f0e4;
+    --hi-line: #d9c99b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+  header.top {
+    padding: 12px 0 20px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 24px;
+  }
+  header.top .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  header.top h1 { margin: 4px 0 0; font-size: 22px; font-weight: 700; }
+  header.top .date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  section { margin-bottom: 28px; }
+  h2 {
+    font-size: 15px; font-weight: 700; letter-spacing: 0.02em;
+    margin: 0 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    color: var(--accent);
+  }
+  h2 .tag {
+    display: inline-block; font-size: 10px;
+    padding: 2px 6px; border-radius: 3px;
+    background: var(--warn-bg); color: var(--warn);
+    margin-left: 6px; letter-spacing: 0; vertical-align: middle;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px;
+  }
+  .funnel {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center;
+  }
+  .funnel .step {
+    padding: 10px 4px; border-radius: 6px;
+    background: #f0ede4; border: 1px solid var(--line);
+  }
+  .funnel .step .n { font-size: 22px; font-weight: 700; line-height: 1; color: var(--accent); }
+  .funnel .step .l { font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.02em; }
+  .funnel .arrow { font-size: 10px; color: var(--ghost); margin-top: 14px; }
+  .highlight {
+    background: var(--hi-bg);
+    border: 1px solid var(--hi-line);
+    border-left: 4px solid #a5852f;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .highlight .lbl {
+    font-size: 11px; color: #a5852f; font-weight: 700;
+    letter-spacing: 0.05em; margin-bottom: 6px;
+  }
+  .highlight h3 { margin: 0 0 8px; font-size: 17px; }
+  .highlight .sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .highlight ul { margin: 8px 0 0; padding-left: 20px; font-size: 13px; }
+  .highlight li { margin-bottom: 4px; }
+  details.item {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 6px; margin-bottom: 10px; overflow: hidden;
+  }
+  details.item summary {
+    padding: 14px; cursor: pointer;
+    list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+  }
+  details.item summary::-webkit-details-marker { display: none; }
+  details.item summary::after { content: "▾"; color: var(--muted); font-size: 11px; flex-shrink: 0; }
+  details.item[open] summary::after { content: "▴"; }
+  details.item .title {
+    display: flex; flex-direction: column; gap: 4px;
+    min-width: 0; flex: 1;
+  }
+  details.item .title .id {
+    font-size: 11px; color: var(--muted); font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  details.item .title .name {
+    font-size: 14px; font-weight: 700; color: var(--ink);
+  }
+  details.item .badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+  details.item .badge {
+    font-size: 10px; padding: 2px 6px; border-radius: 3px;
+    background: var(--ok-bg); color: var(--ok); font-weight: 600;
+  }
+  details.item .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  details.item .body {
+    padding: 0 14px 16px;
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+  .flow {
+    display: grid; grid-template-columns: 90px 1fr; gap: 10px 12px;
+    margin-bottom: 14px;
+  }
+  .flow .k {
+    font-size: 11px; color: var(--muted); font-weight: 600;
+    padding-top: 2px; letter-spacing: 0.02em;
+  }
+  .flow .v { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .flow .v .meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .swatch {
+    display: inline-block; width: 12px; height: 12px;
+    border-radius: 2px; vertical-align: -2px; margin-right: 2px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  .decision-block {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px; margin-bottom: 12px;
+  }
+  .decision-block .item-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px; gap: 10px;
+  }
+  .decision-block .item-head .name {
+    font-size: 14px; font-weight: 700;
+  }
+  .decision-block .item-head .id {
+    font-size: 11px; color: var(--muted);
+  }
+  .options {
+    display: flex; gap: 6px;
+  }
+  .options .opt {
+    flex: 1; text-align: center;
+    padding: 10px 6px; border: 1px solid var(--line);
+    border-radius: 6px; background: #f9f7f2;
+    font-size: 12px; color: var(--ink);
+  }
+  .options .opt.rec {
+    background: var(--ok-bg); border-color: #b8d0b3;
+    color: var(--ok); font-weight: 600;
+  }
+  .note-line {
+    font-size: 12px; color: var(--muted);
+    margin-top: 8px; line-height: 1.5;
+  }
+  .issue-item {
+    padding: 12px 0; border-bottom: 1px dashed var(--line);
+    font-size: 13px;
+  }
+  .issue-item:last-child { border-bottom: none; }
+  .issue-item .head { font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .issue-item .body-text { color: var(--muted); font-size: 12px; line-height: 1.6; }
+  .issue-item.ok .head::before { content: "● "; color: var(--ok); }
+  .issue-item.warn .head::before { content: "▲ "; color: var(--warn); }
+  footer {
+    margin-top: 40px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--ghost);
+    text-align: center; line-height: 1.7;
+  }
+  footer .sig { color: var(--accent); font-weight: 600; }
+  @media (min-width: 480px) {
+    .wrap { padding: 32px 24px 60px; }
+    header.top h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">아이디어샘물 · 일일보고</div>
+    <h1>2026년 7월 19일 (일)</h1>
+    <div class="date">기획전략실 · 사마의 정리 · 05:30 KST</div>
+  </header>
+
+  <section>
+    <h2>1. 오늘의 요약</h2>
+    <div class="card">
+      <div class="funnel">
+        <div class="step"><div class="n">15</div><div class="l">수집</div></div>
+        <div class="step"><div class="n">3</div><div class="l">1차 필터</div></div>
+        <div class="step"><div class="n">3</div><div class="l">2차 필터</div></div>
+        <div class="step"><div class="n">3</div><div class="l">프로토</div></div>
+        <div class="step"><div class="n">3</div><div class="l">디자인</div></div>
+      </div>
+      <p style="margin: 14px 0 0; font-size: 13px; color: var(--muted); text-align: center;">
+        파이프라인 정상 가동. 15건 수집 → 최종 3건 완주 (탈락 12건).
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 오늘의 하이라이트</h2>
+    <div class="highlight">
+      <div class="lbl">가장 밀 만한 항목</div>
+      <h3>[19] 커뮤니티·동호회 회비 관리</h3>
+      <div class="sub">시장·개발·디자인 세 축이 가장 뚜렷하게 정렬된 아이템.</div>
+      <ul>
+        <li><b>공백이 가장 명확</b> — 대안부재 5점 (오늘 15건 중 유일). Splitwise는 "공동 지출 분할"이지 "회원 회비 관리"가 아님. 국내 특화 도구 실질 부재.</li>
+        <li><b>절박도 최상</b> — 총무는 남의 돈을 대신 관리하는 심리·관계 부담을 짐. 단순 귀찮음이 아닌 인간관계 리스크.</li>
+        <li><b>개발 리스크 최소</b> — MVP 4주. 외부 API 없음(카카오페이 개인 QR로 시작 가능). 3건 중 가장 빠른 출시 가능.</li>
+        <li><b>UX 축 명확</b> — 클레버 지시로 "미납자 알림 보내기" 메인 CTA 확정. 디자인 합의도 이 방향 (총무 면책 근거로 발송 기록 타임스탬프 저장).</li>
+        <li><b>마케팅 채널 뚜렷</b> — 총무 카페·소모임/문토/트레바리 파트너십 접근 가능.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 아이템별 상세</h2>
+
+    <details class="item" open>
+      <summary>
+        <div class="title">
+          <span class="id">[19] · 17점 (공동 1위)</span>
+          <span class="name">커뮤니티·동호회 회비 관리</span>
+          <div class="badges">
+            <span class="badge">통과</span>
+            <span class="badge">4주 MVP</span>
+            <span class="badge">대안부재 5점</span>
+          </div>
+        </div>
+      </summary>
+      <div class="body">
+        <div class="flow">
+          <div class="k">원본 불편</div>
+          <div class="v">
+            누가 냈는지 수동 확인, 환불 계산 수동. Splitwise는 공동 지출 분할이지 회원 회비 관리 아님.
+            <div class="meta">출처: Reddit r/eventplanning · r/nonprofit · 당근 동호회 게시판 (월 1~2회 반복)</div>
+          </div>
+          <div class="k">시장 판단</div>
+          <div class="v">
+            필요도 5 · 대중성 3 · 지속성 4 · 대안부재 <b>5</b> = 17점.
+            <div class="meta">팀장 조정: 총무의 심리·관계 부담 반영해 필요도 4→5 상향. [4]와 공동 1위.</div>
+          </div>
+          <div class="k">프로토타입</div>
+          <div class="v">
+            그룹 생성 → 회비 항목(월/분기/특별) → 회원별 납부 체크 → 미납자 카카오 알림·카카오페이 링크. 개인 QR 기반으로 사업자 등록 불요.
+            <div class="meta">Next.js 15 + Supabase. MVP 4주. 클레버 지시: 메인 CTA는 "미납자 알림 보내기".</div>
+          </div>
+          <div class="k">디자인 컨셉</div>
+          <div class="v">
+            <span class="swatch" style="background:#3B5BAD"></span>슬레이트 블루 · <span class="swatch" style="background:#F3F4F6"></span>밝은 배경. 톤=중립+안도감. 금액은 고정폭. CTA 상단 최대 사이즈. 발송 기록 타임스탬프 저장(총무 면책 근거).
+            <div class="meta">참고: 토스 안정감 + Splitwise 데이터 명료함.</div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary>
+        <div class="title">
+          <span class="id">[4] · 17점 (공동 1위)</span>
+          <span class="name">소규모 비즈니스 예약 관리 + 리마인더</span>
+          <div class="badges">
+            <span class="badge">통과</span>
+            <span class="badge">5주 MVP</span>
+            <span class="badge warn">알림 자동화 재정의 필요</span>
+          </div>
+        </div>
+      </summary>
+      <div class="body">
+        <div class="flow">
+          <div class="k">원본 불편</div>
+          <div class="v">
+            카페·미용실·치과가 카카오톡+수동으로 예약받고 리마인더 직접 발송. Calendly는 고가·한국화 부족.
+            <div class="meta">출처: Reddit r/smallbusiness · 네이버 소상공인 카페 (주 3~4회 반복)</div>
+          </div>
+          <div class="k">시장 판단</div>
+          <div class="v">
+            필요도 5 · 대중성 4 · 지속성 5 · 대안부재 3 = 17점. 한국 소상공인 특화, 카카오 알림톡 연동이 명확한 USP.
+            <div class="meta">페르소나: 성수동 개인 필라테스 원장 김민지(32) 등. 월 2~3만원 지불 의사 검증.</div>
+          </div>
+          <div class="k">프로토타입</div>
+          <div class="v">
+            예약 등록 → 자동 리마인더(1일 전/1시간 전) → 대시보드 → 노쇼 관리. 알림 수단: 카카오톡 링크 우선, SMS 선택.
+            <div class="meta">⚠ 클레버 정오표: sharer 링크는 반자동(업주가 클릭·대상 선택 필요). 진짜 자동 발송은 카카오 알림톡(사업자 채널 심사) 또는 SMS 필수. "된다"의 기준을 재정의하거나 개발 기간·비용 재산정 필요. 큐도 BullMQ+Redis는 오버스펙, pg-boss 권장.</div>
+          </div>
+          <div class="k">디자인 컨셉</div>
+          <div class="v">
+            <span class="swatch" style="background:#004E89"></span>진파랑 · <span class="swatch" style="background:#F8F9FA"></span>따뜻한 화이트 + <span class="swatch" style="background:#C9A84C"></span>소프트 골드 포인트. 톤=신뢰+업종 정체성. 대시보드는 카드형+타임라인, 예약 추가는 바텀시트.
+            <div class="meta">참고: 네이버 캘린더 친숙함 + Fresha 예약 블록.</div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary>
+        <div class="title">
+          <span class="id">[15] · 15점</span>
+          <span class="name">사이드 프로젝트·프리랜서 세금 정리 (한국)</span>
+          <div class="badges">
+            <span class="badge">통과</span>
+            <span class="badge">7주 MVP</span>
+            <span class="badge warn">세무사 검증 필수</span>
+          </div>
+        </div>
+      </summary>
+      <div class="body">
+        <div class="flow">
+          <div class="k">원본 불편</div>
+          <div class="v">
+            종소세 신고용 수입·지출 정리. 삼쩜삼은 원천징수 환급 특화, 크레마·더팩스는 전업 사업자용. 부업/사이드 프로젝트용 도구 없음.
+            <div class="meta">출처: Reddit r/freelance · Indie Hackers · 한국 세금 커뮤니티 (5월 시즌 급증)</div>
+          </div>
+          <div class="k">시장 판단</div>
+          <div class="v">
+            필요도 5 · 대중성 3 · 지속성 3 · 대안부재 4 = 15점. 삼쩜삼(누적 2000만+)이 시장 검증. 사이드 프로젝트 사전 정리는 뚜렷한 공백.
+            <div class="meta">⚠ 팀장 원칙: 시즌 편중 회피 위해 "월별 상시 사용 시나리오 우선, 5월 요약은 부가 기능". 이 원칙 없으면 5월 폭증→6월 해지로 LTV 붕괴.</div>
+          </div>
+          <div class="k">프로토타입</div>
+          <div class="v">
+            월별 수입·지출 입력 → 필요경비 태깅 → 예상세액 자동 계산 → 5월 연간 요약 PDF. 홈택스 연동은 MVP 배제.
+            <div class="meta">클레버 조건: <b>MVP 배포 전 세무사 검증 1회 필수</b>(30~50만원). 사업소득 브라켓만 구현되어 있고 기타소득(3.3%) 분리과세 경로 별도 반영 필요. 타입 시그니처 정합성 수정 필요.</div>
+          </div>
+          <div class="k">디자인 컨셉</div>
+          <div class="v">
+            <span class="swatch" style="background:#0F172A"></span>진 네이비 · <span class="swatch" style="background:#ffffff;border-color:#ddd"></span>흰색 + <span class="swatch" style="background:#4338CA"></span>인디고 포인트(설명 요소에만). 3카드 대시보드(수입/지출/세액), "?"→계산과정 설명 팝업, 입력 완료 체크리스트 상단 표시.
+            <div class="meta">참고: 토스 증권 신뢰감 + Notion 설명형 UX.</div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <h2>4. 오늘의 이슈 <span class="tag">절차</span></h2>
+    <div class="card">
+      <div class="issue-item ok">
+        <div class="head">파이프라인 자체는 정상</div>
+        <div class="body-text">
+          어제(2026-07-18) 첫 단계 결번과 대조. 오늘은 00:05 수집부터 03:05 디자인까지 4단계 완주. 어제 결번의 원인은 여전히 미확인이지만, 오늘 정상 가동한 것으로 보아 항상 실패하는 구조적 결함은 아닐 가능성이 높음.
+        </div>
+      </div>
+      <div class="issue-item warn">
+        <div class="head">[15] 개발 초안 · 팀장 사전 검토 없이 저장</div>
+        <div class="body-text">
+          `02-프로토타입.md` 헤더에 "마이클 초안 → 클레버 반박·보완 합의"로 표기되어 있으나, 실제로는 마이클 단독 저장 후 클레버가 사후에 정오표를 추가하는 방식으로 진행. 자율 세션이 사실상 동시 실행되는 구조적 문제로 클레버 지적됨.<br>
+          영향: 디자인팀은 정오표를 못 보고 본문만 참조해 진행했을 가능성. 다행히 [15] 디자인 컨셉은 큰 방향에서 어긋나지 않음.
+        </div>
+      </div>
+      <div class="issue-item warn">
+        <div class="head">2차 필터(마케팅) 커트라인 14점 4건 뭉침</div>
+        <div class="body-text">
+          14점 4건([1]가계부·[3]팟캐스트·[5]재고·[12]자동차)이 커트라인 바로 아래 뭉쳐 있어, 자의성 배제를 위해 전부 탈락 처리. 이 4건은 오늘 폐기가 아닌 "다음 라운드 재검토 대기"로 볼 여지 있음 — 대표 판단 필요.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. 대표 판단 요청</h2>
+
+    <div class="decision-block">
+      <div class="item-head">
+        <span class="name">[19] 커뮤니티 회비 관리</span>
+        <span class="id">17점 · 4주 MVP</span>
+      </div>
+      <div class="options">
+        <div class="opt rec">출시 진행</div>
+        <div class="opt">보류</div>
+        <div class="opt">폐기</div>
+      </div>
+      <div class="note-line">
+        참모 의견: 오늘의 최우선 밀 항목. 가장 짧은 개발 기간, 가장 명확한 공백, 가장 뚜렷한 페르소나. 지금 진행 결정 나면 개발팀 즉시 착수 가능.
+      </div>
+    </div>
+
+    <div class="decision-block">
+      <div class="item-head">
+        <span class="name">[4] 예약 관리 + 리마인더</span>
+        <span class="id">17점 · 5주 MVP</span>
+      </div>
+      <div class="options">
+        <div class="opt">출시 진행</div>
+        <div class="opt rec">조건부 진행</div>
+        <div class="opt">폐기</div>
+      </div>
+      <div class="note-line">
+        참모 의견: 시장 판단은 최상. 다만 "자동 리마인더" 명세가 사실상 반자동(공유 링크)임이 클레버 정오표에서 확인됨. 진짜 자동 발송 원하면 카카오 알림톡 사업자 채널 심사(1~2주) 필수. 심사·비용 감안한 재산정 후 착수 결정 권고.
+      </div>
+    </div>
+
+    <div class="decision-block">
+      <div class="item-head">
+        <span class="name">[15] 사이드 세금 정리</span>
+        <span class="id">15점 · 7주 MVP</span>
+      </div>
+      <div class="options">
+        <div class="opt">출시 진행</div>
+        <div class="opt rec">보류</div>
+        <div class="opt">폐기</div>
+      </div>
+      <div class="note-line">
+        참모 의견: 세무사 검증(30~50만원)·기타소득 로직 추가·시즌 편중 리스크. 3건 중 리스크가 가장 큼. [19]/[4] 착수 후 여력 판단해 결정 권고. 지금 동시 착수는 개발팀 병목 위험.
+      </div>
+    </div>
+
+    <div class="decision-block">
+      <div class="item-head">
+        <span class="name">절차 개선 — 팀장 사전 검토 강제</span>
+        <span class="id">파이프라인 구조</span>
+      </div>
+      <div class="options">
+        <div class="opt rec">planning팀 검토 지시</div>
+        <div class="opt">현행 유지</div>
+      </div>
+      <div class="note-line">
+        참모 의견: 개발팀 자율 세션이 동시 실행되어 클레버가 사전 검토할 수 없는 구조. 오늘은 큰 손해 없이 넘어갔지만, 팀장 검토 없이 다운스트림(디자인·기획)으로 흘러가는 흐름은 반복되면 위험. planning팀이 파이프라인 순차 구조 재설계 검토 권고.
+      </div>
+    </div>
+
+    <div class="decision-block">
+      <div class="item-head">
+        <span class="name">14점 4건 재검토 여부</span>
+        <span class="id">[1]/[3]/[5]/[12]</span>
+      </div>
+      <div class="options">
+        <div class="opt">다음 라운드 재검토</div>
+        <div class="opt rec">폐기</div>
+      </div>
+      <div class="note-line">
+        참모 의견: 커트라인 룰의 자의성 배제 원칙을 훼손하지 않으려면 폐기가 원칙. 재검토는 룰 변경 시에만 열어두는 게 팀 규율 유지에 유리.
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    <div>아이디어샘물 파이프라인 · 자동 생성 보고서</div>
+    <div><span class="sig">기획전략실 · 사마의</span> 작성 · 2026-07-19 05:30 KST</div>
+  </footer>
+
+</div>
+</body>
+</html>
