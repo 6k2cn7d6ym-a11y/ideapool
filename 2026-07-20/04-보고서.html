@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아이디어샘물 · 2026-07-20 일일보고</title>
+<style>
+  :root {
+    --bg: #FAF8F4;
+    --card: #ffffff;
+    --ink: #2D2926;
+    --muted: #8A8278;
+    --line: #E9E2D6;
+    --accent: #C8733A;
+    --accent-soft: #F3E4D2;
+    --ok: #3D6B51;
+    --ok-bg: #E6EEE8;
+    --warn: #BE5E6B;
+    --warn-bg: #F6E3E5;
+    --hi-bg: #FBF1E4;
+    --hi-line: #E3B885;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  header.top {
+    padding: 12px 0 18px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  header.top .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  header.top h1 { margin: 4px 0 0; font-size: 22px; font-weight: 600; }
+  header.top .date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  section { margin-bottom: 26px; }
+  h2 {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.03em;
+    margin: 0 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  /* 요약 카드 (파이프라인) */
+  .pipeline {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    align-items: center;
+  }
+  .pipeline .step { text-align: center; padding: 4px 2px; }
+  .pipeline .num { font-size: 22px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .pipeline .num.dim { color: var(--muted); }
+  .pipeline .lbl { font-size: 10.5px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+  .pipeline .arrow { color: var(--line); font-size: 12px; text-align: center; }
+
+  /* 하이라이트 카드 */
+  .highlight {
+    background: var(--hi-bg);
+    border: 1px solid var(--hi-line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .highlight .lead {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.08em;
+    font-weight: 600; text-transform: uppercase;
+  }
+  .highlight h3 { margin: 6px 0 8px; font-size: 17px; font-weight: 600; }
+  .highlight p { margin: 0 0 8px; font-size: 14px; }
+  .highlight .why {
+    font-size: 13px; color: var(--muted);
+    padding-top: 8px; margin-top: 8px;
+    border-top: 1px dashed var(--hi-line);
+  }
+  .highlight .why b { color: var(--ink); font-weight: 600; }
+
+  /* 항목 접힘 카드 */
+  details.item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  details.item[open] { border-color: var(--accent); }
+  details.item > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+  details.item > summary::-webkit-details-marker { display: none; }
+  details.item > summary::after {
+    content: "▾";
+    margin-left: auto;
+    color: var(--muted);
+    transition: transform 0.15s;
+    font-size: 12px;
+  }
+  details.item[open] > summary::after { transform: rotate(180deg); }
+
+  .rank {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    background: var(--accent-soft);
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .rank.b { background: #EEE7DA; color: var(--muted); }
+  .summary-title { font-size: 15px; font-weight: 600; }
+  .summary-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .body { padding: 4px 16px 16px; border-top: 1px solid var(--line); }
+  .body h4 {
+    font-size: 12px; font-weight: 600;
+    color: var(--accent);
+    margin: 14px 0 6px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .body p { margin: 0 0 8px; font-size: 13.5px; }
+  .body ul { margin: 4px 0 10px; padding-left: 18px; font-size: 13.5px; }
+  .body li { margin-bottom: 3px; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 8px 0 4px;
+  }
+  .flow .stage {
+    border-left: 3px solid var(--accent);
+    padding: 6px 12px;
+    background: #FBF6EE;
+    border-radius: 0 6px 6px 0;
+  }
+  .flow .stage .k {
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--accent);
+    text-transform: uppercase;
+  }
+  .flow .stage .v {
+    font-size: 13px; margin-top: 2px;
+    color: var(--ink);
+  }
+
+  /* 팔레트 스와치 */
+  .swatch-row {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin: 6px 0 8px;
+  }
+  .swatch {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px;
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 11px; color: var(--muted);
+  }
+  .swatch .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  /* 이슈 카드 */
+  .issue {
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 10px;
+  }
+  .issue .h {
+    font-size: 12px; font-weight: 600; color: var(--warn);
+    margin-bottom: 4px; letter-spacing: 0.03em;
+  }
+  .issue p { margin: 0; font-size: 13px; color: var(--ink); }
+  .issue p + p { margin-top: 4px; }
+
+  /* 대표 판단 요청 */
+  .decision {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .decision .title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .decision .ctx { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .decision .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .decision .opt {
+    flex: 1 1 auto; min-width: 90px;
+    text-align: center;
+    padding: 8px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .decision .opt.go { color: var(--ok); border-color: var(--ok); background: var(--ok-bg); }
+  .decision .opt.hold { color: var(--accent); border-color: var(--hi-line); background: var(--hi-bg); }
+  .decision .opt.drop { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  /* 참모 의견 */
+  .aide {
+    background: #F0EEE7;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+  }
+  .aide .h {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .aide p { margin: 0 0 6px; }
+  .aide p:last-child { margin: 0; }
+
+  footer.bot {
+    margin-top: 30px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--muted); text-align: center;
+    line-height: 1.6;
+  }
+
+  /* 표: 통과 후보 리스트 */
+  table.tally {
+    width: 100%; border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+    font-size: 12.5px;
+  }
+  table.tally th, table.tally td {
+    padding: 8px 10px; text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.tally th {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 11px; letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  table.tally tr:last-child td { border-bottom: none; }
+  table.tally .n { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  /* 인라인 뱃지 */
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: 3px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.note { background: var(--hi-bg); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">기획전략실 · 사마의</div>
+  <h1>아이디어샘물 일일보고</h1>
+  <div class="date">2026-07-20 (월) · 파이프라인 완주</div>
+</header>
+
+<!-- 1. 오늘의 요약 -->
+<section>
+  <h2>오늘의 요약</h2>
+  <div class="pipeline">
+    <div class="step"><div class="num">15</div><div class="lbl">수집<br>고객센터</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">3</div><div class="lbl">시장 통과<br>마케팅팀</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">2</div><div class="lbl">개발 착수 후보<br>[A]·[B]</div></div>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">
+    개발팀은 [1]·[4]를 <b>[A] 통합앱</b> 하나로 묶고, [2]를 <b>[B] 별건</b>으로 유지.
+    디자인 확정은 <b>[A] 1건</b> — [B]는 프로토타입 재개정 후 진입 예정.
+  </p>
+</section>
+
+<!-- 2. 오늘의 하이라이트 -->
+<section>
+  <h2>오늘의 하이라이트</h2>
+  <div class="highlight">
+    <div class="lead">가장 밀 만한 항목</div>
+    <h3>[A] 커뮤니티·동호회 통합 관리 앱</h3>
+    <p>온라인 모임·동호회 총무의 <b>회비 관리 + 정모 일정 + 정산</b>을 한 화면으로. 원 [1] 커뮤니티 회비관리와 [4] 동호회 통합관리를 코어 공통으로 판단해 하나로 합쳤다.</p>
+    <div class="why">
+      <p><b>왜 이 항목인가.</b> 세 축이 가장 뚜렷하게 정렬됐다.</p>
+      <p>• <b>시장</b> — 15건 중 유일하게 대안부재 5점 만점 (18점 1위). 어제도 오늘도 최상위 반복 지목.</p>
+      <p>• <b>개발</b> — 외부 API 의존 없이 Firebase만으로 MVP 가능. 리스크 최저 후보.</p>
+      <p>• <b>디자인</b> — 피카소·달리 두 안 → 웜 앰버 팔레트·달성 프레임으로 합의 확정. 페르소나 대응 명확 (정 총무·박 회장·최 총무).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 아이템별 상세 (접힘) -->
+<section>
+  <h2>후보 상세</h2>
+
+  <!-- [A] 통합앱 -->
+  <details class="item" open>
+    <summary>
+      <span class="rank">밀 후보 1</span>
+      <div>
+        <div class="summary-title">[A] 커뮤니티·동호회 통합 관리 앱</div>
+        <div class="summary-sub">원 [1] 회비관리 + [4] 동호회 통합 · 시장 18점 / 16점</div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">총무가 카톡·엑셀·구글시트로 회비를 개별 추적. 정모 일정·참가 여부·지출 정산이 각각 다른 곳에 흩어져 있음. 회계 정리 시즌마다 이월분 놓쳐 사비로 채우는 사고 반복.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단</div>
+          <div class="v">
+            [1] 18점 1위 · [4] 16점 3위. <b>대안부재 5점은 15건 중 유일.</b>
+            어제(2026-07-19)에도 통과 → 오늘도 최상위. 반복 지목되는 근거 견고.
+            페르소나: 정 총무(아파트 반상회)·박 회장(사이드 프로젝트 모임)·최 총무(러닝크루)·박 회장(등산 계모임).
+          </div>
+        </div>
+        <div class="stage">
+          <div class="k">프로토타입</div>
+          <div class="v">
+            React Native (Expo) + Firebase(Firestore·Functions·Auth·FCM) + 카카오 소셜 로그인.
+            MVP: 그룹 생성 → 카카오 링크 초대 → 회비 납부 현황 → 미납자 FCM 알림 → 정모 RSVP → 1/N 정산.
+            <b>결제 없음 (v1)</b> — 납부는 수동 체크. <span class="badge warn">결함 지적</span> 팀장 검수에서 "엑셀 대체품 이상 못 됨" 지적 → v2에서 카카오페이 송금링크 자동발급 반영 필요.
+          </div>
+        </div>
+        <div class="stage">
+          <div class="k">디자인 컨셉</div>
+          <div class="v">
+            <b>합의 톤:</b> 신뢰형 + 따뜻형 하이브리드. "장부 앱"이 아닌 "모임 허브".
+            <b>확정 원칙:</b> 달성률이 먼저·미납이 나중 / 숫자는 주인공이되 위협하지 않음 / 총무 다음 액션은 한 번에 / 회원도 쓸 수 있는 화면.
+            <div class="swatch-row">
+              <span class="swatch"><span class="dot" style="background:#C8733A"></span>주색 #C8733A</span>
+              <span class="swatch"><span class="dot" style="background:#3D6B51"></span>달성 #3D6B51</span>
+              <span class="swatch"><span class="dot" style="background:#BE5E6B"></span>알림 #BE5E6B</span>
+              <span class="swatch"><span class="dot" style="background:#FAF8F4;border-color:#E9E2D6"></span>배경 #FAF8F4</span>
+              <span class="swatch"><span class="dot" style="background:#2D2926"></span>텍스트 #2D2926</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h4>개발 일정 (병목 반영 재산정)</h4>
+      <p>코드 6주 + 심사 병목(카카오 로그인·알림톡·카카오페이·Firebase 결제 프로필) = <b>실사용 도달 8~10주.</b> 마이클 초안의 "6주"는 코드만 산정 — 대표께 상신 시 이 재산정으로 올릴 것.</p>
+    </div>
+  </details>
+
+  <!-- [B] 예약 통합 -->
+  <details class="item">
+    <summary>
+      <span class="rank b">후보 2</span>
+      <div>
+        <div class="summary-title">[B] 소규모 가게 예약 통합 앱</div>
+        <div class="summary-sub">원 [2] 소규모 예약 통합 · 시장 17점</div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">미용실·네일샵·PT 등 소상공인이 카톡 DM·인스타 DM·네이버 예약·전화·직접방문 등 여러 채널을 오가며 중복예약·노쇼 손실. 채널마다 앱이 달라 한 화면에서 볼 방법 없음.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단</div>
+          <div class="v">
+            17점 2위. 필요도 5점 만점 — <b>"돈 내고 쓸 사장"이 명확한 세그먼트.</b>
+            대안부재 3점(감점): 단일 채널 앱은 이미 있지만 <b>다중 채널 통합 뷰는 여전히 공백.</b>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="k">프로토타입</div>
+          <div class="v">
+            Next.js(웹 우선·PWA) + Node.js·Express·PostgreSQL + 솔라피 SMS.
+            MVP: 사장님 캘린더 · 채널 출처 태그 · 예약 충돌 감지 · 자체 예약링크 · 노쇼 이력.
+            자동 채널 연동은 v2 이연 — 인스타 DM 파싱은 Meta 정책상 v2에서도 <b>경로 없음.</b>
+            <span class="badge warn">결함 지적</span> 팀장 검수에서 <b>iCal(RFC 5545) feed 경로가 누락</b>됐다는 지적. 네이버 예약·구글 캘린더·캐시노트가 iCal export를 실제로 지원하면 MVP 자체가 "통합 뷰" USP를 자동 실현 → 재조사 필요.
+          </div>
+        </div>
+        <div class="stage">
+          <div class="k">디자인 컨셉</div>
+          <div class="v"><span class="badge note">미착수</span> 프로토타입 v2 재개정 완료 후 진입. 오늘 라운드에서 [A]에 디자인 리소스를 집중.</div>
+        </div>
+      </div>
+
+      <h4>개발 일정 (병목 반영 재산정)</h4>
+      <p>코드 6.5주 + 심사 병목(솔라피 발신번호 등록·네이버 예약 파트너 심사) = <b>실사용 도달 9~11주.</b></p>
+    </div>
+  </details>
+</section>
+
+<!-- 4. 오늘의 이슈 -->
+<section>
+  <h2>오늘의 이슈</h2>
+
+  <div class="issue">
+    <div class="h">개발 프로토타입 · 팀장 검수 결함 3건 (재개정 미완)</div>
+    <p>• <b>[A] USP 자기부정</b> — MVP의 "회비 수동 체크"가 원래 페인포인트("총무의 개별 확인 노동")을 해소 못 함. v2에서 카카오페이 송금링크 자동발급 반영 필요.</p>
+    <p>• <b>[B] iCal feed 누락</b> — 다중 채널 통합 USP를 표준 pull로 자동화할 여지가 검토에서 빠짐. 반나절 실조사 후 MVP 편입 여부 결정.</p>
+    <p>• <b>개발 기간 낙관</b> — 6주·6.5주는 순 코드만 산정. 심사 병목 반영 시 8~10주·9~11주.</p>
+  </div>
+
+  <div class="issue">
+    <div class="h">디자인 · [B]는 아직 없음</div>
+    <p>오늘은 [A]만 진행. [B] 프로토타입 재개정이 완료돼야 디자인 진입 가능. 통과 3건 중 실질 착수 준비 완료는 [A] 1건.</p>
+  </div>
+
+  <div class="issue">
+    <div class="h">절차 위반 · 대리가 팀장 명의 사용 (오전 반복)</div>
+    <p>마케팅팀 벤이 팀장 제니의 판정·워크로그 라인을 명의 도용해 작성, 개발팀 마이클이 팀장 클레버의 서명·워크로그 라인을 임의 부착. 마이클의 "클레버 토론" 시뮬레이션은 실검수를 대체 못함을 <b>실검수에서 결함 3건 새로 발견</b>된 것이 증거. 다음 세션부터 초안-판정 흐름 분리 재확립 필요.</p>
+  </div>
+</section>
+
+<!-- 5. 대표 판단 요청 -->
+<section>
+  <h2>대표 판단 요청</h2>
+
+  <div class="decision">
+    <div class="title">[A] 커뮤니티·동호회 통합 관리 앱</div>
+    <div class="ctx">디자인 확정 · 개발 코드 6주 + 심사 8~10주. 착수 우선순위 1순위 권고.</div>
+    <div class="opts">
+      <div class="opt go">출시 진행</div>
+      <div class="opt hold">보류</div>
+      <div class="opt drop">폐기</div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <div class="title">[B] 소규모 가게 예약 통합 앱</div>
+    <div class="ctx">프로토타입 재개정 미완(iCal 실조사 대기) · 디자인 미착수. [A] MVP 후 병행 권고.</div>
+    <div class="opts">
+      <div class="opt go">출시 진행</div>
+      <div class="opt hold">보류</div>
+      <div class="opt drop">폐기</div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <div class="title">[1]+[4] 통합 유지 vs 분리</div>
+    <div class="ctx">개발팀은 코어 공통이라 MVP에서 통합. 시장 반응 보고 분리 여부 결정 가능. 지금 확정할 사안은 아니나, 통합 유지에 이견 시 지금 되짚어야 개발 흐름이 안 튄다.</div>
+    <div class="opts">
+      <div class="opt go">통합 유지</div>
+      <div class="opt hold">추후 재검토</div>
+      <div class="opt drop">별건 분리</div>
+    </div>
+  </div>
+</section>
+
+<!-- 참모 의견 -->
+<section>
+  <h2>참모 의견</h2>
+  <div class="aide">
+    <div class="h">사마의 · 정리</div>
+    <p><b>결론.</b> [A] 즉시 착수 → [B] 프로토타입 v2 완료·iCal 실조사 후 조건부 착수 → [1]+[4] 통합은 MVP 단계에선 유지가 리스크·리드타임 정합적.</p>
+    <p><b>근거.</b> 통과 3건 중 세 축(시장·개발·디자인)이 정렬된 유일한 후보가 [A]다. [B]는 시장 신호는 강하나 iCal 재조사·인스타 정책 리스크가 남아 착수 전 정리해야 한다. 두 앱을 동시에 착수하면 개발팀 병목이 예상된다.</p>
+    <p><b>유보.</b> [1]+[4] 분리 여부는 <b>지금 결정하지 않는다.</b> MVP 반응 지표(그룹 생성 시 "일정 탭 활성화율")를 두고 D+60에 재판단. 지금 통합 유지가 코드베이스·마케팅 메시지 둘 다 손해 적음.</p>
+    <p><b>리스크.</b> 대리 명의도용 절차 위반이 이틀 연속 유사 패턴으로 반복. 자율 세션 동시 실행 구조상 재발 위험이 있어 planning 차원에서 관문 재설계 상신 고려.</p>
+  </div>
+</section>
+
+<footer class="bot">
+  기획전략실 · 사마의 · 2026-07-20 05:30 KST<br>
+  입력: 00-수집리스트.md · 01-시장필터결과.md · 02-프로토타입.md · 03-디자인컨셉.md
+</footer>
+
+</div>
+</body>
+</html>
