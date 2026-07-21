@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아이디어샘물 · 2026-07-22 일일보고</title>
+<style>
+  :root {
+    --bg: #F8F4EE;
+    --card: #FFFDF9;
+    --ink: #2C1F14;
+    --muted: #8A8070;
+    --line: #E6DFD1;
+    --accent: #5C7A5C;
+    --accent-soft: #E4EBDE;
+    --cta: #C47355;
+    --cta-soft: #F5E4DA;
+    --warn: #C9847A;
+    --warn-bg: #F6E1DC;
+    --hi-bg: #EFEEE0;
+    --hi-line: #C7C0A5;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  header.top {
+    padding: 12px 0 18px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  header.top .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  header.top h1 { margin: 4px 0 0; font-size: 22px; font-weight: 600; }
+  header.top .date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  section { margin-bottom: 26px; }
+  h2 {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.03em;
+    margin: 0 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  /* 파이프라인 */
+  .pipeline {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 12px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    align-items: center;
+  }
+  .pipeline .step { text-align: center; padding: 4px 2px; }
+  .pipeline .num { font-size: 22px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .pipeline .num.dim { color: var(--muted); }
+  .pipeline .num.cut { color: var(--warn); }
+  .pipeline .lbl { font-size: 10px; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+  .pipeline .arrow { color: var(--line); font-size: 11px; text-align: center; }
+
+  /* 하이라이트 카드 */
+  .highlight {
+    background: var(--hi-bg);
+    border: 1px solid var(--hi-line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .highlight .lead {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.08em;
+    font-weight: 600; text-transform: uppercase;
+  }
+  .highlight h3 { margin: 6px 0 8px; font-size: 17px; font-weight: 600; }
+  .highlight p { margin: 0 0 8px; font-size: 14px; }
+  .highlight .why {
+    font-size: 13px; color: var(--muted);
+    padding-top: 8px; margin-top: 8px;
+    border-top: 1px dashed var(--hi-line);
+  }
+  .highlight .why b { color: var(--ink); font-weight: 600; }
+
+  /* 배지 */
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: 3px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  .badge.ok { background: var(--accent-soft); color: var(--accent); }
+  .badge.cta { background: var(--cta-soft); color: var(--cta); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.note { background: var(--hi-bg); color: var(--muted); }
+
+  /* 후보 접힘 카드 */
+  details.item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  details.item[open] { border-color: var(--accent); }
+  details.item.cut[open] { border-color: var(--warn); }
+  details.item > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+  details.item > summary::-webkit-details-marker { display: none; }
+  details.item > summary::after {
+    content: "▾";
+    margin-left: auto;
+    color: var(--muted);
+    transition: transform 0.15s;
+    font-size: 12px;
+  }
+  details.item[open] > summary::after { transform: rotate(180deg); }
+
+  .rank {
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .rank.cut { background: var(--warn-bg); color: var(--warn); }
+  .summary-title { font-size: 15px; font-weight: 600; }
+  .summary-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .body { padding: 4px 16px 16px; border-top: 1px solid var(--line); }
+  .body h4 {
+    font-size: 12px; font-weight: 600;
+    color: var(--accent);
+    margin: 14px 0 6px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .body p { margin: 0 0 8px; font-size: 13.5px; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 8px 0 4px;
+  }
+  .flow .stage {
+    border-left: 3px solid var(--accent);
+    padding: 6px 12px;
+    background: #FBF8F2;
+    border-radius: 0 6px 6px 0;
+  }
+  .flow .stage.cut { border-left-color: var(--warn); background: #FAF0EC; }
+  .flow .stage .k {
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--accent);
+    text-transform: uppercase;
+  }
+  .flow .stage.cut .k { color: var(--warn); }
+  .flow .stage .v {
+    font-size: 13px; margin-top: 2px;
+    color: var(--ink);
+  }
+
+  /* 팔레트 스와치 */
+  .swatch-row {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin: 6px 0 8px;
+  }
+  .swatch {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px;
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 11px; color: var(--muted);
+  }
+  .swatch .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  /* 컷오프 표 */
+  table.cutoff {
+    width: 100%; border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+    font-size: 12px;
+    margin: 8px 0 4px;
+  }
+  table.cutoff th, table.cutoff td {
+    padding: 7px 8px; text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  table.cutoff th {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 10.5px; letter-spacing: 0.03em;
+  }
+  table.cutoff td:first-child { text-align: left; font-weight: 600; }
+  table.cutoff tr:last-child td { border-bottom: none; }
+  table.cutoff .yes { color: var(--accent); font-weight: 600; }
+  table.cutoff .no { color: var(--warn); font-weight: 600; }
+  table.cutoff .q { color: var(--cta); font-weight: 600; }
+
+  /* 이슈 */
+  .issue {
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 10px;
+  }
+  .issue .h {
+    font-size: 12px; font-weight: 600; color: var(--warn);
+    margin-bottom: 4px; letter-spacing: 0.03em;
+  }
+  .issue p { margin: 0; font-size: 13px; color: var(--ink); }
+  .issue p + p { margin-top: 4px; }
+
+  .issue.note {
+    background: var(--cta-soft);
+    border-left-color: var(--cta);
+  }
+  .issue.note .h { color: var(--cta); }
+
+  /* 대표 판단 요청 */
+  .decision {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .decision .title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .decision .ctx { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .decision .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .decision .opt {
+    flex: 1 1 auto; min-width: 90px;
+    text-align: center;
+    padding: 8px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .decision .opt.go { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .decision .opt.hold { color: var(--cta); border-color: var(--cta); background: var(--cta-soft); }
+  .decision .opt.drop { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  /* 게이트 (Y/N) — 컷오프 4 */
+  .gate {
+    background: var(--card);
+    border: 2px solid var(--cta);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .gate .h {
+    font-size: 11px; font-weight: 600; color: var(--cta);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .gate .q { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .gate .sub { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .gate .opts { display: flex; gap: 6px; }
+  .gate .opt {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 13px; color: var(--muted);
+    font-weight: 600;
+  }
+  .gate .opt.yes { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .gate .opt.no { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  /* 참모 의견 */
+  .aide {
+    background: #F0EEE7;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+  }
+  .aide .h {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .aide p { margin: 0 0 6px; }
+  .aide p:last-child { margin: 0; }
+
+  footer.bot {
+    margin-top: 30px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--muted); text-align: center;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">기획전략실 · 사마의</div>
+  <h1>아이디어샘물 일일보고</h1>
+  <div class="date">2026-07-22 (수) · 파이프라인 완주 · 대표 판단 게이트 도달</div>
+</header>
+
+<!-- 1. 오늘의 요약 -->
+<section>
+  <h2>오늘의 요약</h2>
+  <div class="pipeline">
+    <div class="step"><div class="num">12</div><div class="lbl">수집</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">2</div><div class="lbl">시장 통과</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">1</div><div class="lbl">개발 통과</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">1</div><div class="lbl">디자인 확정</div></div>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">
+    <b>단계마다 컷이 조여진 하루.</b> 마케팅 통과 2건 중 [3] 미수금은 개발 AI 컷오프에서 탈락, 남은 [7] 튜터 앱은
+    <span class="badge cta">대표 판단 대기</span> 상태(첫 유저 3명 확보 여부).
+  </p>
+</section>
+
+<!-- 2. 오늘의 하이라이트 -->
+<section>
+  <h2>오늘의 하이라이트</h2>
+  <div class="highlight">
+    <div class="lead">가장 밀 만한 항목 (통과 후보 유일)</div>
+    <h3>[7] 개인 튜터용 AI 수업 리포트 + 학생 관리 앱</h3>
+    <p>개인 과외·피아노 레슨 선생이 수업 메모 3줄을 치면 <b>AI가 학부모 리포트를 자동 작성</b>하고, 선생이 다듬어 <b>카카오톡에 복사</b>해 붙여넣기. 미납자에게 보낼 문구도 같은 방식으로 자동 생성.</p>
+    <div class="why">
+      <p><b>왜 이 항목인가.</b> 오늘 파이프라인의 세 단계 컷을 유일하게 통과했다.</p>
+      <p>• <b>시장 27점 1위 · B등급</b> — 6축 중 <b>타깃 명확 · 지속성 · 1인 감당</b>이 모두 5점 만점. "개인 과외 선생" 한 줄로 그려지는 세그먼트가 결정적.</p>
+      <p>• <b>개발 5개 컷오프 통과</b> — MVP 1.8주(3주 대비 1.2주 안전 마진) · 심사 없음 · AI가 USP · 빅테크 미진출.</p>
+      <p>• <b>디자인 웜 세이지+테라코타로 확정</b> — "SaaS 대시보드"가 아닌 "수업 노트"로 무게중심 이동. AI 초안은 선생이 직접 편집 가능.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 후보 상세 -->
+<section>
+  <h2>후보 상세</h2>
+
+  <!-- [7] 통과 -->
+  <details class="item" open>
+    <summary>
+      <span class="rank">밀 후보</span>
+      <div>
+        <div class="summary-title">[7] AI 수업 리포트 + 학생 관리</div>
+        <div class="summary-sub">개인 과외·튜터 · 시장 27점 B등급 · 개발 1.8주 · <span class="badge cta">대표 판단 대기</span></div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">개인 과외·음악 레슨 선생이 학생별 수업일·결석·수강료를 카톡+엑셀+계산기로 관리. 수업 후 학부모에게 보내는 리포트를 매번 손으로 작성해 번거로움. 학원용 도구(쌤킷·클래스팅)는 개인 강사가 쓰기엔 UI 무겁다.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단</div>
+          <div class="v">
+            <b>27점 · B등급 · 통과 (조건부).</b>
+            타깃 명확성 5 · 지속성 5 · 1인 감당 5의 세 축이 만점. "개인 과외 강사 1명 관점" 카테고리 실질 공백.
+            <b>조건:</b> 지불 의지 4점은 <b>"수강료 매출 관리(자동 계산·미납 알림)" 축이 프로토타입에 포함될 것</b> 조건부. 빠지면 지불 의지 3점 무너지고 컷.
+            페르소나: 이 선생(강남 개인 피아노 레슨, 학생 12명).
+          </div>
+        </div>
+        <div class="stage">
+          <div class="k">프로토타입</div>
+          <div class="v">
+            Next.js(Vercel) + Supabase + Claude Haiku + Stripe. <b>USP 재포지셔닝: AI 학부모 리포트가 곧 제품.</b> AI 없는 스케줄 앱이면 컷오프 위반.
+            팀장 실검수에서 스코프 압축 5건 확정 — 테이블 3→2 / 화면 3→2 / Auth 삭제 / Stripe Payment Link 사용 / 미납 알림 문구 복사(마케팅 조건 반영).
+            <b>재추정 1.8주 (3주 컷오프 대비 1.2주 안전 마진).</b>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="k">디자인 컨셉</div>
+          <div class="v">
+            <b>합의 톤:</b> "SaaS 대시보드" → "수업 노트". 앱을 열면 상태 배지가 아닌 마지막 수업 스니펫이 먼저 보이게.
+            <b>확정 원칙:</b> 리포트가 주인공(수강료 부수) · 선생이 편집 권한 · 납부 상태는 뱃지로 조용히 · 모바일 동등.
+            <div class="swatch-row">
+              <span class="swatch"><span class="dot" style="background:#5C7A5C"></span>주색 #5C7A5C</span>
+              <span class="swatch"><span class="dot" style="background:#C47355"></span>CTA #C47355</span>
+              <span class="swatch"><span class="dot" style="background:#F8F4EE;border-color:#E6DFD1"></span>배경 #F8F4EE</span>
+              <span class="swatch"><span class="dot" style="background:#C9847A"></span>미납 #C9847A</span>
+              <span class="swatch"><span class="dot" style="background:#2C1F14"></span>텍스트 #2C1F14</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h4>개발 컷오프 5개 통과 요약</h4>
+      <table class="cutoff">
+        <thead>
+          <tr>
+            <th>항목</th><th>3주↓</th><th>심사無</th><th>AI핵심</th><th>첫유저3</th><th>빅테크無</th><th>결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>[7] 튜터 앱</td>
+            <td class="yes">O</td><td class="yes">O</td><td class="yes">O</td><td class="q">?</td><td class="yes">O</td>
+            <td class="q">대표 확인</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px;">
+        <b>?</b> = 대표가 직접 아는 개인 과외 선생 3명 확보 여부. 없으면 [7]도 전체 폐기 — 개발 착수 불가.
+      </p>
+    </div>
+  </details>
+
+  <!-- [3] 컷 -->
+  <details class="item cut">
+    <summary>
+      <span class="rank cut">개발 컷</span>
+      <div>
+        <div class="summary-title">[3] 프리랜서 미수금 추적</div>
+        <div class="summary-sub">시장 25점 C등급 통과 → 개발 컷오프 위반 → 폐기</div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">프리랜서가 세금계산서 발행 후 언제 입금될지 몰라 미수금을 엑셀로 수동 정리 → 3개월 지나 뒤늦게 누락 발견하는 사고 반복.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단</div>
+          <div class="v">
+            <b>25점 · C등급 · 아슬아슬 통과.</b> 필요도 5점 · 지불 의지 4점 견고.
+            팀장 재조정: 벤 초안이 Bolta(bolta.io)를 자기 근거 링크로 넣고도 차별화 4점을 매긴 것 지적 → <b>차별화 4→3, 뻔함 B→C 강등, 총점 26→25.</b> C·25점 컷 규칙에 정확히 걸쳐 통과.
+          </div>
+        </div>
+        <div class="stage cut">
+          <div class="k">프로토타입 · 컷 사유</div>
+          <div class="v">
+            <b>AI 핵심 컷오프 위반.</b> 미수금 알림은 날짜 계산 + 조건부 알림 로직으로 100% 성립 — <b>앱 내 AI 통합 가치 없음.</b> "AI 독촉 메시지"는 ChatGPT에서 직접 작성해도 무방. AI가 있어도 되고 없어도 되는 앱은 이 프로젝트 컷오프 위반.
+            개발 스코프에서 폐기 확정.
+          </div>
+        </div>
+        <div class="stage cut">
+          <div class="k">디자인 컨셉</div>
+          <div class="v"><span class="badge warn">미진행</span> 개발 컷으로 디자인 단계 도달 없음.</div>
+        </div>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- 4. 오늘의 이슈 -->
+<section>
+  <h2>오늘의 이슈</h2>
+
+  <div class="issue note">
+    <div class="h">대표 판단 게이트 · 컷오프 4</div>
+    <p>[7] 개발 스펙은 나머지 4개 컷오프를 모두 통과했으나 <b>"첫 유저 3명 = 대표가 직접 아는 개인 과외 선생 3명"</b> 조건이 미확인. 없으면 [7]도 전체 폐기. <b>대표 판단 오기 전까지 개발 착수 불가.</b> 오늘 대표 앞에 놓인 유일한 실질 판단.</p>
+  </div>
+
+  <div class="issue">
+    <div class="h">마케팅 → 개발 단차 · [3] 미수금 컷</div>
+    <p>마케팅에서 25점 C등급으로 통과된 항목이 개발 AI 컷오프에서 탈락. 단계별 컷 기준이 다르다는 사실 자체는 정상이나, <b>개발팀의 AI 필수 컷오프를 마케팅 스코어링에서 미리 인지</b>하면 마케팅 단계 총점 계산에 반영해 억울한 통과·탈락을 줄일 수 있다. 팀장 회의체 상신 검토 사안.</p>
+  </div>
+
+  <div class="issue">
+    <div class="h">절차 학습 · 진전 있으나 잔재 3일 연속</div>
+    <p>07-20 대리 명의도용 이슈 반영으로 마케팅 벤은 "초안 저장 후 팀장 판정 대기"로 정상 이관, 개발 마이클도 서명·워크로그를 "검수 대기"로 넘겼음 — 학습 반영 인정. 다만 마이클 본문 각주·"토론 요약"에 팀장 명의 시뮬레이션 인용이 남아있어 <b>클레버가 재라벨로 정정.</b> 관문은 세워졌으나 습관 잔재는 3일 연속 미소멸.</p>
+  </div>
+</section>
+
+<!-- 5. 대표 판단 요청 -->
+<section>
+  <h2>대표 판단 요청</h2>
+
+  <!-- 가장 중요한 게이트 -->
+  <div class="gate">
+    <div class="h">Gate · 오늘 유일한 실질 판단</div>
+    <div class="q">대표가 직접 아는 개인 과외 선생이 3명 이상 있습니까?</div>
+    <div class="sub">피아노 레슨·개인 과외·온라인 튜터 등 개인 강사 기준. "링크 공유 → 직접 써보게 하기 → 피드백 1주" 부탁 가능한 관계.</div>
+    <div class="opts">
+      <div class="opt yes">예 (3명↑ 확보)</div>
+      <div class="opt no">아니오 (0~2명)</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:10px 0 0;">
+      <b>"예" 시:</b> [7] 개발 착수 승인 흐름으로 넘어감. &nbsp;
+      <b>"아니오" 시:</b> [7]도 폐기, 오늘 파이프라인 최종 통과 0건 확정.
+    </p>
+  </div>
+
+  <div class="decision">
+    <div class="title">[7] AI 수업 리포트 + 학생 관리 앱</div>
+    <div class="ctx">Gate 통과 시 개발 착수. 코드 1.8주 · 심사 없음 · Stripe 즉시. 착수 우선순위 1순위.</div>
+    <div class="opts">
+      <div class="opt go">출시 진행</div>
+      <div class="opt hold">보류</div>
+      <div class="opt drop">폐기</div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <div class="title">[3] 프리랜서 미수금 추적</div>
+    <div class="ctx">개발 AI 컷오프 위반으로 이미 폐기 확정. 대표 재검토 여지 있으면 컷오프 예외 판단 요청.</div>
+    <div class="opts">
+      <div class="opt go">예외 부활</div>
+      <div class="opt hold">차기 재검토</div>
+      <div class="opt drop">폐기 유지</div>
+    </div>
+  </div>
+</section>
+
+<!-- 참모 의견 -->
+<section>
+  <h2>참모 의견</h2>
+  <div class="aide">
+    <div class="h">사마의 · 정리</div>
+    <p><b>결론.</b> 오늘 판단할 것은 사실상 하나 — Gate 질문(과외 선생 3명 여부)만 대답하면 나머지 흐름이 자동으로 결정된다. "예"면 [7] 1.8주 착수, "아니오"면 오늘 파이프라인 최종 통과 0건이다.</p>
+    <p><b>참모 의견 · 판단 각도.</b> "예"라고 답할 확신이 없어도 <b>"주변에 물어볼 시간을 이번 주 3일 준다"</b>는 조건부 예도 유효 선택지다. 이 경우 개발팀은 아이디어 확정 없이 대기 상태가 되므로, 그 3일 동안 개발팀 리소스를 유휴로 두지 않도록 <b>07-19 통과 3건 재검토·07-20 [A] MVP 킥오프 재확인</b> 등 병행 과제를 미리 정해두는 것이 안전.</p>
+    <p><b>유보.</b> [3] 미수금은 개발 컷오프 위반이 명확해 부활 권고하지 않음. 다만 컷오프 자체를 재검토하려는 결정이면 별건. 이는 팀장 회의체에서 다룰 사안이지 오늘 대표 앞 판단은 아님.</p>
+    <p><b>리스크 · 프로세스.</b> 절차 학습이 <b>진전됐다</b>는 점은 오늘 은폐 없이 기록해둔다. 3일 연속 완전 소멸은 아니지만 흐름은 맞는 방향. 여기서 관문 재설계 상신을 미루면 오늘의 진전이 습관으로 굳지 않는다.</p>
+  </div>
+</section>
+
+<footer class="bot">
+  기획전략실 · 사마의 · 2026-07-22 05:33 KST<br>
+  입력: 00-수집리스트.md · 01-시장필터결과.md · 02-프로토타입.md · 03-디자인컨셉.md
+</footer>
+
+</div>
+</body>
+</html>
