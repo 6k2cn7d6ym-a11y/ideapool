@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아이디어샘물 · 2026-07-23 일일보고</title>
+<style>
+  :root {
+    --bg: #F8F4EE;
+    --card: #FFFDF9;
+    --ink: #2C1F14;
+    --muted: #8A8070;
+    --line: #E6DFD1;
+    --accent: #5C7A5C;
+    --accent-soft: #E4EBDE;
+    --cta: #C47355;
+    --cta-soft: #F5E4DA;
+    --warn: #C9847A;
+    --warn-bg: #F6E1DC;
+    --hi-bg: #EFEEE0;
+    --hi-line: #C7C0A5;
+    --halt: #7A6E5C;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  header.top {
+    padding: 12px 0 18px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  header.top .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  header.top h1 { margin: 4px 0 0; font-size: 22px; font-weight: 600; }
+  header.top .date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  section { margin-bottom: 26px; }
+  h2 {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.03em;
+    margin: 0 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  /* 정지 파이프라인 */
+  .pipeline {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 12px;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+    align-items: center;
+  }
+  .pipeline .step { text-align: center; padding: 4px 2px; }
+  .pipeline .num { font-size: 22px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .pipeline .num.halt { color: var(--halt); }
+  .pipeline .lbl { font-size: 10px; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+  .pipeline .arrow { color: var(--line); font-size: 11px; text-align: center; }
+  .pipeline .stop {
+    grid-column: 3 / -1;
+    text-align: center;
+    padding: 8px;
+    background: #F1EEE4;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--halt);
+    letter-spacing: 0.03em;
+  }
+  .pipeline .stop b { color: var(--warn); }
+
+  /* 배너 (정지) */
+  .halt-banner {
+    background: var(--hi-bg);
+    border: 1px solid var(--hi-line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .halt-banner .lead {
+    font-size: 11px; color: var(--halt); letter-spacing: 0.08em;
+    font-weight: 600; text-transform: uppercase;
+  }
+  .halt-banner h3 { margin: 6px 0 8px; font-size: 17px; font-weight: 600; }
+  .halt-banner p { margin: 0 0 8px; font-size: 14px; }
+  .halt-banner p:last-child { margin: 0; }
+  .halt-banner .why {
+    font-size: 13px; color: var(--muted);
+    padding-top: 8px; margin-top: 8px;
+    border-top: 1px dashed var(--hi-line);
+  }
+  .halt-banner .why b { color: var(--ink); font-weight: 600; }
+
+  /* 배지 */
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: 3px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  .badge.ok { background: var(--accent-soft); color: var(--accent); }
+  .badge.cta { background: var(--cta-soft); color: var(--cta); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.halt { background: #EBE7DA; color: var(--halt); }
+
+  /* 단계별 상태 표 */
+  .stages {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .stages .row {
+    display: grid;
+    grid-template-columns: 84px 1fr auto;
+    padding: 12px 14px;
+    gap: 12px;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .stages .row:last-child { border-bottom: none; }
+  .stages .stage {
+    font-size: 11px; font-weight: 600;
+    color: var(--accent); text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .stages .stage.halt { color: var(--halt); }
+  .stages .desc { color: var(--ink); line-height: 1.55; }
+  .stages .desc .note { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
+
+  /* 이슈 카드 */
+  .issue {
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 10px;
+  }
+  .issue .h {
+    font-size: 12px; font-weight: 600; color: var(--warn);
+    margin-bottom: 4px; letter-spacing: 0.03em;
+  }
+  .issue p { margin: 0; font-size: 13px; color: var(--ink); }
+  .issue p + p { margin-top: 4px; }
+  .issue.note {
+    background: var(--cta-soft);
+    border-left-color: var(--cta);
+  }
+  .issue.note .h { color: var(--cta); }
+  .issue.info {
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+  }
+  .issue.info .h { color: var(--accent); }
+
+  /* 대표 판단 요청 */
+  .decision {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .decision .title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .decision .ctx { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .decision .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .decision .opt {
+    flex: 1 1 auto; min-width: 90px;
+    text-align: center;
+    padding: 8px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .decision .opt.go { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .decision .opt.hold { color: var(--cta); border-color: var(--cta); background: var(--cta-soft); }
+  .decision .opt.drop { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  /* 대표 게이트 (재상신) */
+  .gate {
+    background: var(--card);
+    border: 2px solid var(--cta);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .gate .h {
+    font-size: 11px; font-weight: 600; color: var(--cta);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .gate .q { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .gate .sub { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .gate .opts { display: flex; gap: 6px; }
+  .gate .opt {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 13px; color: var(--muted);
+    font-weight: 600;
+  }
+  .gate .opt.yes { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .gate .opt.no { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+  .gate .opt.later { color: var(--cta); border-color: var(--cta); background: var(--cta-soft); }
+
+  /* 참모 의견 */
+  .aide {
+    background: #F0EEE7;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+  }
+  .aide .h {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .aide p { margin: 0 0 6px; }
+  .aide p:last-child { margin: 0; }
+
+  footer.bot {
+    margin-top: 30px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--muted); text-align: center;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">기획전략실 · 사마의</div>
+  <h1>아이디어샘물 일일보고</h1>
+  <div class="date">2026-07-23 (목) · <span style="color:var(--warn)">파이프라인 정지</span> · 통과 없음</div>
+</header>
+
+<!-- 1. 오늘의 요약 -->
+<section>
+  <h2>오늘의 요약</h2>
+  <div class="pipeline">
+    <div class="step"><div class="num halt">—</div><div class="lbl">수집</div></div>
+    <div class="arrow">→</div>
+    <div class="stop"><b>정지</b> · 수집 단계 상류에서 끊김 (00-수집리스트.md 부재)</div>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">
+    파이프라인 통과 <b>0건</b>. 지시서 원칙 "파일 없으면 통과 없음"이 <b>수집 단계</b>에서 발동돼 이후 마케팅·개발·디자인 세션 모두 미실시.
+    폴더는 00:06에 생성됐으나 <code>00-수집리스트.md</code>가 없어 모든 하류 세션이 정상적으로 종료.
+  </p>
+</section>
+
+<!-- 2. 오늘의 하이라이트 (없음 대신 재상신) -->
+<section>
+  <h2>오늘의 하이라이트</h2>
+  <div class="halt-banner">
+    <div class="lead">신규 후보 없음 · 미해결 게이트 재상신</div>
+    <h3>07-22 [7] AI 튜터 앱 · 대표 판단 게이트 <span class="badge halt">4일째 미해소</span></h3>
+    <p>어제(07-22) 파이프라인 완주 결과인 [7]는 <b>디자인까지 확정된 유일한 후보</b>지만, 컷오프 4번(대표 지인 과외 선생 3명 확보)이 미확인 상태로 <b>4일째 개발 착수 스톱</b>. 오늘 신규 후보가 없는 상황에서 실질 판단 사안은 이것 하나로 좁혀졌다.</p>
+    <div class="why">
+      <p><b>왜 오늘 재상신하나.</b></p>
+      <p>• <b>어제와 동일 질문</b> — 실질 새 정보 없음. 대표 답변만 있으면 즉시 다음 단계 진입 가능한 상태로 보관 중.</p>
+      <p>• <b>정지 라운드의 실질 하이라이트</b> — 오늘 새 후보가 없으니 어제 남긴 게이트가 자연스레 오늘의 최상위 안건이 됨.</p>
+      <p>• <b>개발팀 유휴 리스크</b> — 답변 지연이 길어질수록 개발팀 슬롯이 다른 라운드의 후보로 채워지지 않음. 재상신은 압박이 아니라 <b>가용 슬롯 확인</b> 성격.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 단계별 상태 (아이템 대신) -->
+<section>
+  <h2>단계별 상태</h2>
+  <div class="stages">
+    <div class="row">
+      <div class="stage halt">수집</div>
+      <div class="desc">
+        <span class="badge halt">미실시</span> 제이크(수집) → 폴(1차 필터) 파이프라인이 오늘 산출물 없이 끊김.
+        <span class="note">폴더는 00:06 생성만 확인됨. 어느 지점에서 지연됐는지 상류 규명은 개발팀 소관 밖 → 마케팅팀 팀장 제니께 확인 요청 (클레버 07-23 워크로그 지적).</span>
+      </div>
+      <div><span class="badge halt">STOP</span></div>
+    </div>
+    <div class="row">
+      <div class="stage halt">시장필터</div>
+      <div class="desc">
+        <span class="badge halt">미실시</span> 입력(<code>00-수집리스트.md</code>) 부재.
+        <span class="note">벤은 지시서 조건("파일 없으면 세션 종료")을 정확히 지켜 초안·판정·산출물 모두 없음. 팀장 제니 명의 대필 없음.</span>
+      </div>
+      <div><span class="badge halt">STOP</span></div>
+    </div>
+    <div class="row">
+      <div class="stage halt">프로토타입</div>
+      <div class="desc">
+        <span class="badge halt">미실시</span> 입력(<code>01-시장필터결과.md</code>) 부재로 마이클 세션 자동 종료.
+        <span class="note">클레버가 판단 승인 — 상류 파일 부재 확인, 지시서 조건 정확히 준수, 팀장 명의 대필 없음. <b>07-20 절차 학습이 오늘 온전히 유지됨.</b></span>
+      </div>
+      <div><span class="badge halt">STOP</span></div>
+    </div>
+    <div class="row">
+      <div class="stage halt">디자인</div>
+      <div class="desc">
+        <span class="badge halt">미실시</span> 상류 산출물 부재 → 피카소·달리 세션 자체 미개시.
+      </div>
+      <div><span class="badge halt">STOP</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 오늘의 이슈 -->
+<section>
+  <h2>오늘의 이슈</h2>
+
+  <div class="issue">
+    <div class="h">상류 지연 원인 미규명</div>
+    <p>수집팀(제이크) → 1차 필터(폴) 중 어느 쪽에서 오늘 작업이 안 나왔는지 규명 필요. 오늘 폴더는 00:06 생성만 확인 · 이후 산출물 없음. 마케팅팀 팀장 제니께 확인 요청이 클레버 워크로그에 이미 명시됐음 — 확인 결과에 따라 재발 방지 관문 필요 여부 결정.</p>
+  </div>
+
+  <div class="issue note">
+    <div class="h">대표 게이트 4일째 · 병렬 유휴 방지 대안</div>
+    <p>07-22 [7] 대표 판단 대기가 하루 더 이월. 지금 대표께 답변을 강요하는 성격은 아니되, 답변 지연 동안 개발팀이 <b>07-19 통과 3건 재검토 · 07-20 [A] MVP 킥오프 재확인</b> 등 병행 과제에 리소스를 쓸 수 있게 자율지시 옵션 신설을 검토 요청. 오늘 정지 라운드에서 특히 실감된 리스크.</p>
+  </div>
+
+  <div class="issue info">
+    <div class="h">긍정 관찰 · 절차 학습 온전 유지</div>
+    <p>파이프라인이 자동 정지된 하루임에도 <b>대리 4명(벤·마이클·피카소·달리) 모두 명의 대필 없이 종료</b>. 클레버는 상류 부재를 승인하며 팀장 명의 대필 없음 명시. 07-20 시정한 관문이 부하 없이도 정상 작동함을 확인.</p>
+  </div>
+</section>
+
+<!-- 5. 대표 판단 요청 -->
+<section>
+  <h2>대표 판단 요청</h2>
+
+  <!-- 재상신 게이트 -->
+  <div class="gate">
+    <div class="h">Gate 재상신 · 07-22 유예 · 4일째</div>
+    <div class="q">대표가 직접 아는 개인 과외 선생이 3명 이상 있습니까?</div>
+    <div class="sub">피아노 레슨·개인 과외·온라인 튜터 등 개인 강사 기준. "링크 공유 → 직접 써보게 하기 → 피드백 1주" 부탁 가능한 관계. 오늘 신규 후보가 없어 실질 유일한 판단 안건.</div>
+    <div class="opts">
+      <div class="opt yes">예 (3명↑)</div>
+      <div class="opt no">아니오 (0~2명)</div>
+      <div class="opt later">이번 주 물어보고 회신</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:10px 0 0;">
+      <b>"예":</b> [7] 개발 착수 승인 흐름 · <b>"아니오":</b> [7] 최종 폐기 · <b>"이번 주 회신":</b> 개발팀 병행 과제 자율지시 옵션 검토 요청.
+    </p>
+  </div>
+
+  <div class="decision">
+    <div class="title">오늘 신규 후보</div>
+    <div class="ctx"><span class="badge halt">없음</span> 파이프라인 정지로 신규 후보 부재. 판단 대상 없음.</div>
+    <div class="opts">
+      <div class="opt" style="cursor:default">—</div>
+    </div>
+  </div>
+</section>
+
+<!-- 참모 의견 -->
+<section>
+  <h2>참모 의견</h2>
+  <div class="aide">
+    <div class="h">사마의 · 정리</div>
+    <p><b>결론.</b> 오늘은 은폐 없이 "통과 없음"으로 마감. 파이프라인이 상류에서 끊긴 하루이며, 대리 4명·팀장 1명 모두 지시서 조건을 정확히 지켜 종료했다. 산출물이 없다는 사실 자체가 오늘의 산출물이다.</p>
+    <p><b>실질 안건 하나.</b> 07-22 [7] 대표 게이트가 4일째 미해소인 것이 오늘 라운드에서 유일한 실질 판단 사안이다. 재상신은 대표께 재촉이 아니라 <b>답변 지연 동안 개발팀을 어디에 쓸지</b>의 부수 결정을 위한 정보 요청 성격.</p>
+    <p><b>긍정 관찰.</b> 07-20의 대리 명의도용 이슈로 세운 관문이 <b>부하가 없는 하루에도 정상 작동</b>했다. 그동안 "관문이 습관으로 굳었는지"를 관찰할 방법이 없었는데, 오늘 정지 라운드가 우연히 스트레스 테스트 역할을 했다. 사흘 연속 잔재 후 오늘 완전 소멸이라는 흐름은 기록해둘 가치가 있다.</p>
+    <p><b>후속 상신.</b> ①상류 지연 원인 규명 — 마케팅팀 팀장 제니께 확인 요청(클레버가 이미 워크로그에 명시). ②개발팀 병행 과제 자율지시 옵션 — 대표 게이트 대기가 이틀 이상 이어질 때 팀장이 병행 과제를 지정할 수 있는 관문 신설 여부. 오늘 두 건을 팀장 회의체 안건으로 예약해두는 편이 안전하다.</p>
+  </div>
+</section>
+
+<footer class="bot">
+  기획전략실 · 사마의 · 2026-07-23 05:30 KST<br>
+  입력: <span style="color:var(--warn)">00-수집리스트.md 부재 · 이후 산출물 없음</span>
+</footer>
+
+</div>
+</body>
+</html>
