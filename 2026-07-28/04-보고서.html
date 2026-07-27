@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아이디어샘물 · 2026-07-28 일일보고</title>
+<style>
+  :root {
+    --bg: #F8F4EE;
+    --card: #FFFDF9;
+    --ink: #2C1F14;
+    --muted: #8A8070;
+    --line: #E6DFD1;
+    --accent: #5C7A5C;
+    --accent-soft: #E4EBDE;
+    --cta: #C47355;
+    --cta-soft: #F5E4DA;
+    --warn: #C9847A;
+    --warn-bg: #F6E1DC;
+    --hi-bg: #EFEEE0;
+    --hi-line: #C7C0A5;
+    --halt: #7A6E5C;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  header.top {
+    padding: 12px 0 18px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  header.top .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  header.top h1 { margin: 4px 0 0; font-size: 22px; font-weight: 600; }
+  header.top .date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  section { margin-bottom: 26px; }
+  h2 {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.03em;
+    margin: 0 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .pipeline {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 12px;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+    align-items: center;
+  }
+  .pipeline .step { text-align: center; padding: 4px 2px; }
+  .pipeline .num { font-size: 22px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .pipeline .num.mid { color: var(--cta); }
+  .pipeline .num.dim { color: var(--muted); }
+  .pipeline .num.halt { color: var(--halt); }
+  .pipeline .lbl { font-size: 10px; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+  .pipeline .arrow { color: var(--line); font-size: 11px; text-align: center; }
+
+  .highlight {
+    background: var(--hi-bg);
+    border: 1px solid var(--hi-line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .highlight .lead {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.08em;
+    font-weight: 600; text-transform: uppercase;
+  }
+  .highlight h3 { margin: 6px 0 8px; font-size: 17px; font-weight: 600; }
+  .highlight p { margin: 0 0 8px; font-size: 14px; }
+  .highlight .why {
+    font-size: 13px; color: var(--muted);
+    padding-top: 8px; margin-top: 8px;
+    border-top: 1px dashed var(--hi-line);
+  }
+  .highlight .why b { color: var(--ink); font-weight: 600; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: 3px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  .badge.ok { background: var(--accent-soft); color: var(--accent); }
+  .badge.cta { background: var(--cta-soft); color: var(--cta); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.halt { background: #EBE7DA; color: var(--halt); }
+
+  details.item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  details.item[open] { border-color: var(--accent); }
+  details.item.cta[open] { border-color: var(--cta); }
+  details.item.cut[open] { border-color: var(--warn); }
+  details.item > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+  details.item > summary::-webkit-details-marker { display: none; }
+  details.item > summary::after {
+    content: "▾";
+    margin-left: auto;
+    color: var(--muted);
+    transition: transform 0.15s;
+    font-size: 12px;
+  }
+  details.item[open] > summary::after { transform: rotate(180deg); }
+  .rank {
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .rank.cta { background: var(--cta-soft); color: var(--cta); }
+  .rank.cut { background: var(--warn-bg); color: var(--warn); }
+  .summary-title { font-size: 15px; font-weight: 600; }
+  .summary-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .body { padding: 4px 16px 16px; border-top: 1px solid var(--line); }
+  .body h4 {
+    font-size: 12px; font-weight: 600;
+    color: var(--accent);
+    margin: 14px 0 6px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .body p { margin: 0 0 8px; font-size: 13.5px; }
+  .body ul { margin: 4px 0 10px; padding-left: 18px; font-size: 13.5px; }
+  .body li { margin-bottom: 3px; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 8px 0 4px;
+  }
+  .flow .stage {
+    border-left: 3px solid var(--accent);
+    padding: 6px 12px;
+    background: #FBF8F2;
+    border-radius: 0 6px 6px 0;
+  }
+  .flow .stage.cta { border-left-color: var(--cta); background: #FBEFE4; }
+  .flow .stage.halt { border-left-color: var(--halt); background: #F1EEE4; }
+  .flow .stage .k {
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--accent);
+    text-transform: uppercase;
+  }
+  .flow .stage.cta .k { color: var(--cta); }
+  .flow .stage.halt .k { color: var(--halt); }
+  .flow .stage .v {
+    font-size: 13px; margin-top: 2px;
+    color: var(--ink);
+  }
+
+  table.tally {
+    width: 100%; border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+    font-size: 12.5px;
+  }
+  table.tally th, table.tally td {
+    padding: 7px 8px; text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  table.tally th {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 10.5px; letter-spacing: 0.03em;
+  }
+  table.tally td:first-child { text-align: left; font-weight: 600; }
+  table.tally tr:last-child td { border-bottom: none; }
+  table.tally .n { font-variant-numeric: tabular-nums; }
+
+  .issue {
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 10px;
+  }
+  .issue .h {
+    font-size: 12px; font-weight: 600; color: var(--warn);
+    margin-bottom: 4px; letter-spacing: 0.03em;
+  }
+  .issue p { margin: 0; font-size: 13px; color: var(--ink); }
+  .issue p + p { margin-top: 4px; }
+
+  .issue.note { background: var(--cta-soft); border-left-color: var(--cta); }
+  .issue.note .h { color: var(--cta); }
+  .issue.info { background: var(--accent-soft); border-left-color: var(--accent); }
+  .issue.info .h { color: var(--accent); }
+
+  .decision {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .decision .title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .decision .ctx { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .decision .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .decision .opt {
+    flex: 1 1 auto; min-width: 90px;
+    text-align: center;
+    padding: 8px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .decision .opt.go { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .decision .opt.hold { color: var(--cta); border-color: var(--cta); background: var(--cta-soft); }
+  .decision .opt.drop { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  .gate {
+    background: var(--card);
+    border: 2px solid var(--cta);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .gate .h {
+    font-size: 11px; font-weight: 600; color: var(--cta);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .gate .q { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .gate .sub { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .gate .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .gate .opt {
+    flex: 1 1 auto; min-width: 100px;
+    text-align: center;
+    padding: 10px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 12.5px; color: var(--muted);
+    font-weight: 600;
+  }
+  .gate .opt.a { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .gate .opt.b { color: var(--cta); border-color: var(--cta); background: var(--cta-soft); }
+  .gate .opt.c { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  .aide {
+    background: #F0EEE7;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+  }
+  .aide .h {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .aide p { margin: 0 0 6px; }
+  .aide p:last-child { margin: 0; }
+
+  footer.bot {
+    margin-top: 30px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--muted); text-align: center;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">기획전략실 · 사마의</div>
+  <h1>아이디어샘물 일일보고</h1>
+  <div class="date">2026-07-28 (화) · 화·목 스케줄 첫 정상 사이클 · 시장필터 Q&A 왕복 중</div>
+</header>
+
+<!-- 1. 오늘의 요약 -->
+<section>
+  <h2>오늘의 요약</h2>
+  <div class="pipeline">
+    <div class="step"><div class="num">32</div><div class="lbl">수집<br>제이크</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num mid">5</div><div class="lbl">폴 필터<br>승계</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num halt">0/5</div><div class="lbl">벤 초안<br>Q&A 대기</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num halt">—</div><div class="lbl">프로토<br>미실시</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num halt">—</div><div class="lbl">디자인<br>미실시</div></div>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">
+    <b>수집·폴 필터 완료.</b> 마케팅 단계에서 벤이 5건 재스코어링 → <b>초안 통과 0건</b>. 팀장 제니가 <b>[제니 질문 1·2] 발동</b>하며 벤 답변 대기 상태로 이관. 시장필터 최종 판정 미완이라 프로토·디자인 정상 미실시.
+  </p>
+</section>
+
+<!-- 2. 오늘의 하이라이트 -->
+<section>
+  <h2>오늘의 하이라이트</h2>
+  <div class="highlight">
+    <div class="lead">가장 밀 만한 항목 (제니 판정 대기 중 최우선)</div>
+    <h3>[32] 카페 원가 vs 판가 실시간 마진 알림 <span class="badge cta">지불 3→4 재검증 대기</span></h3>
+    <p>발주 원가 변동과 판가 사이 마진을 실시간 감시 → 임계 이하 시 알림. "100만 폐업 시대" 페인포인트 직결. POS가 매출을 세면, 우리는 <b>순간 마진을 표시</b>한다는 각도.</p>
+    <div class="why">
+      <p><b>왜 오늘 하이라이트인가.</b></p>
+      <p>• <b>시장 필요도 5점·차별화 4점</b> — 폴 필터 통과 3건 중 시장 신호 가장 견고. F&B POS는 매출만 추적, 마진 실시간 감시는 실질 공백.</p>
+      <p>• <b>지불 의지 3→4 뒤집힐 여지</b> — 벤이 "F&B 무료 문화" 통념으로 3점 매겼으나 제니가 실측 재검증 지시. 4점 상향 시 총 24 · C 25 미달로 여전히 컷이지만 뻔함 등급 B 강등 여지 열림.</p>
+      <p>• <b>제니 [팀장 관찰] 논점</b> — 벤이 5건 모두 실측 없는 감평으로 지불 3점 매긴 게 5연속 통과 0건 패턴의 원인 가능성. [32]가 그 대표 사례로 재검증 필수.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 후보 상세 -->
+<section>
+  <h2>후보 상세 · 폴 승계 5건</h2>
+
+  <details class="item cta" open>
+    <summary>
+      <span class="rank cta">밀 후보 · 판정 대기</span>
+      <div>
+        <div class="summary-title">[32] 카페 마진 알림</div>
+        <div class="summary-sub">총 23점 · C · 지불 3→4 재검증 대기</div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">원두 원가 800→1200원 급등을 자영업자가 실시간 인지 못 하고 아메리카노 1500원 유지 → 3개월 뒤 월 마진 0 발견. F&B 자영업자 반복 패턴.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단</div>
+          <div class="v">벤 초안 23점(공동 1위) · C등급. 필요 5·타깃 4·지속 4·차별 4·지불 <b>3(재검증 대기)</b>·1인 3. 폐업 리스크 직결 세그먼트라 지불 4점 여지 있음.</div>
+        </div>
+        <div class="stage cta">
+          <div class="k">프로토타입</div>
+          <div class="v"><span class="badge cta">미실시</span> 시장필터 최종 판정 전 개발팀 승계 없음. 벤 답변 → 제니 재판정 후 진입.</div>
+        </div>
+        <div class="stage cta">
+          <div class="k">디자인 컨셉</div>
+          <div class="v"><span class="badge cta">미실시</span> 상류 미완.</div>
+        </div>
+      </div>
+
+      <h4>제니 [질문 1] 재검증 요청 사항</h4>
+      <ul>
+        <li>캐시노트 프리미엄·스마트로 추가서비스 등 F&B 대상 유료 SaaS의 월 결재 실사례·타깃·F&B 비중 (실측)</li>
+        <li>"폐업 리스크 = 지불 의지 높음" 가설의 반증 — 폐업 직전 자영업자가 오히려 신규 지출 축소한다는 반론 커뮤니티 신호</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="item cut">
+    <summary>
+      <span class="rank cut">벤 초안 컷</span>
+      <div>
+        <div class="summary-title">[20] 이메일 조용한 실패 감지</div>
+        <div class="summary-sub">총 23점 · C · 지불 3→4 재검증 대기 (제니 질문 2)</div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">뉴스레터 open rate 조용히 30→18% 하락, 원인 몰라 매출 20% 손실 3개월 방치. deliverability 이슈 자각 없이 지속.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단</div>
+          <div class="v">벤 초안 23점 · C. 필요 4·타깃 4·지속 5·차별 3·지불 <b>3(재검증 대기)</b>·1인 4. 차별화 3점은 SendGrid·Postmark 자체 알림 기존 대안 존재.</div>
+        </div>
+        <div class="stage cut">
+          <div class="k">프로토타입 / 디자인</div>
+          <div class="v"><span class="badge warn">미실시</span> 시장필터 컷 확정 시 승계 없음. 재검증 결과 4점 상향돼도 총 24로 여전히 C 25 미달.</div>
+        </div>
+      </div>
+
+      <h4>제니 [질문 2] 재검증 요청 사항</h4>
+      <ul>
+        <li>1인 이커머스·소규모 뉴스레터 운영자의 SendGrid·Postmark·Mailchimp 유료 진입 비율 (실측)</li>
+        <li>"여러 채널 통합 조용한 실패 알림" 각도가 Postmark Insights·SendGrid Event Webhook에 흡수되는지 → 차별화 3→2 강등 리스크</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="item cut">
+    <summary>
+      <span class="rank cut">벤 초안 컷</span>
+      <div>
+        <div class="summary-title">[13] AI Rate Limit 통합 트래킹</div>
+        <div class="summary-sub">총 21점 · C · 1인 감당 2점 트리거</div>
+      </div>
+    </summary>
+    <div class="body">
+      <p>필요 4·타깃 4·지속 5·차별 3·지불 3·1인 <b>2</b>. 다중 벤더 API 인증·rate limit 파악 지속 유지가 CS·유지보수 폭발. 07-23 [4] 간호사 근무표 패턴. C·25 미달 + 지불 3 + 1인 2 삼중 컷.</p>
+    </div>
+  </details>
+
+  <details class="item cut">
+    <summary>
+      <span class="rank cut">벤 초안 컷</span>
+      <div>
+        <div class="summary-title">[21] 자동화 조용한 실패 알림</div>
+        <div class="summary-sub">총 21점 · C · 이중 컷</div>
+      </div>
+    </summary>
+    <div class="body">
+      <p>필요 4·타깃 3·지속 5·차별 3·지불 3·1인 3. Zapier·Make 자체 알림 존재로 차별 3, 자동화 마니아 무료 문화로 지불 3. C·25 미달 + 지불 3 이중 컷.</p>
+    </div>
+  </details>
+
+  <details class="item cut">
+    <summary>
+      <span class="rank cut">벤 초안 컷</span>
+      <div>
+        <div class="summary-title">[22] 식당 메뉴 QR·인쇄 관리</div>
+        <div class="summary-sub">총 20점 · C · 커트라인 경계</div>
+      </div>
+    </summary>
+    <div class="body">
+      <p>필요 3·타깃 4·지속 3·차별 3·지불 3·1인 4. 메뉴 변경 시 재인쇄 짜증 명확하나 폐업까지 안 감. 20점 커트라인 경계 + 지불 3 이중 컷. 폴이 확인 요청한 07-22 [6] 제빵 유통기한과는 별건 판정 (유통기한=재고·법규, 메뉴 QR=정보 표시).</p>
+    </div>
+  </details>
+</section>
+
+<!-- 4. 오늘의 이슈 -->
+<section>
+  <h2>오늘의 이슈</h2>
+
+  <div class="issue note">
+    <div class="h">시장필터 Q&A 왕복 중 · 최종 판정 미완</div>
+    <p>제니가 [제니 질문 1·2] 발동 후 벤 답변 대기 상태. 벤이 실측 근거로 답변해야 최종 판정 확정 → 오늘 세션 안에 완결 어려울 수 있고, 완결 안 되면 개발팀 승계 없음. <b>자율협업 릴레이 시스템이 실제로 굴러가고 있는 첫 정상 사이클</b>이라는 점은 관찰 가치 있음.</p>
+  </div>
+
+  <div class="issue">
+    <div class="h">5연속 통과 0건 패턴 · 벤 감평 지불 3점 구조적 리스크</div>
+    <p>07-23 이후 07-28까지 통과 0건 지속. 공통점: 벤이 매긴 <b>"지불 3점"이 모두 실측 없는 감평</b>. [20] "무료 툴 문화"·[32] "F&B 무료 문화"·[13][21] "개발자·자동화 무료 문화"·[22] "소상공인 5천원 상한" 모두 실측 아닌 통념. 07-22 Bolta 학습이 지나치게 안전 방향으로 작동해 초안 단계에서 이미 컷이 확정되고 팀장 판정 여지 자체가 좁아지는 구조. <b>제니가 대표 결재 상신 요청함.</b></p>
+  </div>
+
+  <div class="issue info">
+    <div class="h">긍정 관찰 · 자율협업 매커니즘 실전 첫 검증 통과</div>
+    <p>수집 세션에서 폴이 "제이크에게 확인 요청" 남긴 후 마케팅팀도 벤이 폴 컷 27건 재검증 인정 → 제니가 벤 초안에 [제니 질문 1·2] 발동. <b>07-23 자율협업 v6 실험 원칙(방·페르소나·릴레이)이 실제 파이프라인에서 굴러가고 있음.</b> 07-20 대리 명의 대필 위반도 이번엔 재발 없음 — 관문이 온전히 작동.</p>
+  </div>
+</section>
+
+<!-- 5. 대표 판단 요청 -->
+<section>
+  <h2>대표 판단 요청</h2>
+
+  <div class="gate">
+    <div class="h">Gate · 제니 상신 · 5연속 통과 0건 패턴 대응</div>
+    <div class="q">시장필터 커트라인 재설정 검토할지, 억지 승격 없음 원칙 유지할지?</div>
+    <div class="sub">벤 감평 지불 3점이 5회 연속 컷 트리거 · 초안 단계에서 컷이 굳어 팀장 판정 여지가 좁아지는 구조. 재설정 vs 원칙 유지의 트레이드오프.</div>
+    <div class="opts">
+      <div class="opt a">원칙 유지 (억지 승격 없음 · 통과 0건 감수)</div>
+      <div class="opt b">벤 감평 규칙 개정 (실측 없는 감평 시 지불 4점 default · 실측 확인 후 조정)</div>
+      <div class="opt c">커트라인 하향 (뻔함 C·22점↑ 통과 등)</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:10px 0 0;">
+      <b>참모 권고: 옵션 b.</b> 원칙 유지는 개발팀 유휴 지속, 커트라인 하향은 뻔한 아이디어 통과 위험. 벤 감평 규칙 개정이 절충안.
+    </p>
+  </div>
+
+  <div class="decision">
+    <div class="title">[32] 카페 마진 알림 (재검증 결과 대기)</div>
+    <div class="ctx">벤 답변 → 제니 재판정 결과 확정 시 개발팀 승계. 지금은 판정 대기.</div>
+    <div class="opts">
+      <div class="opt go">출시 진행 (제니 재판정 통과 시)</div>
+      <div class="opt hold">보류 (다음 사이클 재검토)</div>
+      <div class="opt drop">폐기</div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <div class="title">[20] 이메일 조용한 실패 감지</div>
+    <div class="ctx">지불 3→4 상향 여지 있으나 총 24 · C 25 미달로 여전히 컷 예상. 대표 부활 판단.</div>
+    <div class="opts">
+      <div class="opt go">예외 부활</div>
+      <div class="opt hold">차기 재검토</div>
+      <div class="opt drop">폐기 유지</div>
+    </div>
+  </div>
+</section>
+
+<!-- 참모 의견 -->
+<section>
+  <h2>참모 의견</h2>
+  <div class="aide">
+    <div class="h">사마의 · 정리</div>
+    <p><b>결론.</b> 오늘 실질 안건은 두 개다 — (1) 제니가 상신한 <b>5연속 통과 0건 대응</b>, (2) 재검증 결과에 따른 <b>[32] 카페 마진 알림 승격 여부</b>. 나머지는 대기·자동.</p>
+    <p><b>구조 진단.</b> 07-22 Bolta 학습으로 마케팅팀이 "지불 의지" 축을 극히 보수적으로 매기게 됐고, 이게 초안 통과 0건 → 팀장 판정 무의미 → 파이프라인 정지 사이클을 5회 만들었다. 원칙("실측 없이 후한 점수 금지")은 정합하나 반대 방향("실측 없이 낮은 점수도 감평")도 함께 잡히지 않아 편향 발생. 벤 감평 규칙 개정(옵션 b)이 이 편향의 대칭 교정.</p>
+    <p><b>유보.</b> 커트라인 하향(옵션 c)은 지금은 권고하지 않음. 5회 통과 0건은 구조 결함 신호이지 커트라인 자체 문제가 아니다. 커트라인을 낮추면 뻔한 후보가 통과해 개발·디자인 리소스 낭비 리스크가 더 크다.</p>
+    <p><b>긍정 관찰.</b> 자율협업 v6 시스템이 오늘 실전 첫 정상 사이클에서 안정적으로 굴러갔다. 페르소나 대필 없음·마커 릴레이·팀장 재검증까지 정상. 07-23 실험에서 다듬은 원칙이 실전에서도 유효함을 확인.</p>
+    <p><b>후속.</b> 오늘 벤 답변이 완결되지 않으면 목요일(07-30) 사이클 첫 세션에서 벤이 답변 → 제니 재판정 → 개발팀 승계 흐름으로 이어짐. 대표 결재는 그 전에 방향만 정해주시면 다음 사이클부터 반영 가능.</p>
+  </div>
+</section>
+
+<footer class="bot">
+  기획전략실 · 사마의 · 2026-07-28 05:35 KST<br>
+  입력: 00-수집리스트.md · 01-시장필터결과.md (벤 초안 · 제니 [질문 1·2] 발동 상태) · 02·03 미실시
+</footer>
+
+</div>
+</body>
+</html>
