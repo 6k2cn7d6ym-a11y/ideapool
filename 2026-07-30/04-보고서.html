@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아이디어샘물 · 2026-07-30 일일보고</title>
+<style>
+  :root {
+    --bg: #F8F4EE;
+    --card: #FFFDF9;
+    --ink: #2C1F14;
+    --muted: #8A8070;
+    --line: #E6DFD1;
+    --accent: #5C7A5C;
+    --accent-soft: #E4EBDE;
+    --cta: #C47355;
+    --cta-soft: #F5E4DA;
+    --warn: #C9847A;
+    --warn-bg: #F6E1DC;
+    --hi-bg: #EFEEE0;
+    --hi-line: #C7C0A5;
+    --halt: #7A6E5C;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  header.top {
+    padding: 12px 0 18px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  header.top .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  header.top h1 { margin: 4px 0 0; font-size: 22px; font-weight: 600; }
+  header.top .date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  section { margin-bottom: 26px; }
+  h2 {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.03em;
+    margin: 0 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .pipeline {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 12px;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+    align-items: center;
+  }
+  .pipeline .step { text-align: center; padding: 4px 2px; }
+  .pipeline .num { font-size: 22px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .pipeline .num.mid { color: var(--cta); }
+  .pipeline .num.dim { color: var(--muted); }
+  .pipeline .num.halt { color: var(--halt); }
+  .pipeline .lbl { font-size: 10px; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+  .pipeline .arrow { color: var(--line); font-size: 11px; text-align: center; }
+
+  .streak {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 12.5px;
+  }
+  .streak .n {
+    font-size: 20px; font-weight: 700; color: var(--warn);
+    font-variant-numeric: tabular-nums;
+  }
+  .streak .t { color: var(--ink); }
+  .streak .sub { color: var(--muted); margin-left: auto; }
+
+  .highlight {
+    background: var(--hi-bg);
+    border: 1px solid var(--hi-line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .highlight .lead {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.08em;
+    font-weight: 600; text-transform: uppercase;
+  }
+  .highlight h3 { margin: 6px 0 8px; font-size: 17px; font-weight: 600; }
+  .highlight p { margin: 0 0 8px; font-size: 14px; }
+  .highlight .why {
+    font-size: 13px; color: var(--muted);
+    padding-top: 8px; margin-top: 8px;
+    border-top: 1px dashed var(--hi-line);
+  }
+  .highlight .why b { color: var(--ink); font-weight: 600; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: 3px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  .badge.ok { background: var(--accent-soft); color: var(--accent); }
+  .badge.cta { background: var(--cta-soft); color: var(--cta); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.halt { background: #EBE7DA; color: var(--halt); }
+
+  details.item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  details.item[open] { border-color: var(--accent); }
+  details.item.cta[open] { border-color: var(--cta); }
+  details.item.cut[open] { border-color: var(--warn); }
+  details.item > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+  details.item > summary::-webkit-details-marker { display: none; }
+  details.item > summary::after {
+    content: "▾";
+    margin-left: auto;
+    color: var(--muted);
+    transition: transform 0.15s;
+    font-size: 12px;
+  }
+  details.item[open] > summary::after { transform: rotate(180deg); }
+  .rank {
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .rank.cta { background: var(--cta-soft); color: var(--cta); }
+  .rank.cut { background: var(--warn-bg); color: var(--warn); }
+  .summary-title { font-size: 15px; font-weight: 600; }
+  .summary-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .body { padding: 4px 16px 16px; border-top: 1px solid var(--line); }
+  .body h4 {
+    font-size: 12px; font-weight: 600;
+    color: var(--accent);
+    margin: 14px 0 6px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .body p { margin: 0 0 8px; font-size: 13.5px; }
+  .body ul { margin: 4px 0 10px; padding-left: 18px; font-size: 13.5px; }
+  .body li { margin-bottom: 3px; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 8px 0 4px;
+  }
+  .flow .stage {
+    border-left: 3px solid var(--accent);
+    padding: 6px 12px;
+    background: #FBF8F2;
+    border-radius: 0 6px 6px 0;
+  }
+  .flow .stage.cta { border-left-color: var(--cta); background: #FBEFE4; }
+  .flow .stage.halt { border-left-color: var(--halt); background: #F1EEE4; }
+  .flow .stage .k {
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--accent);
+    text-transform: uppercase;
+  }
+  .flow .stage.cta .k { color: var(--cta); }
+  .flow .stage.halt .k { color: var(--halt); }
+  .flow .stage .v {
+    font-size: 13px; margin-top: 2px;
+    color: var(--ink);
+  }
+
+  table.tally {
+    width: 100%; border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+    font-size: 12.5px;
+  }
+  table.tally th, table.tally td {
+    padding: 7px 8px; text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  table.tally th {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 10.5px; letter-spacing: 0.03em;
+  }
+  table.tally td:first-child { text-align: left; font-weight: 600; }
+  table.tally tr:last-child td { border-bottom: none; }
+  table.tally .n { font-variant-numeric: tabular-nums; }
+
+  .issue {
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 10px;
+  }
+  .issue .h {
+    font-size: 12px; font-weight: 600; color: var(--warn);
+    margin-bottom: 4px; letter-spacing: 0.03em;
+  }
+  .issue p { margin: 0; font-size: 13px; color: var(--ink); }
+  .issue p + p { margin-top: 4px; }
+
+  .issue.note { background: var(--cta-soft); border-left-color: var(--cta); }
+  .issue.note .h { color: var(--cta); }
+  .issue.info { background: var(--accent-soft); border-left-color: var(--accent); }
+  .issue.info .h { color: var(--accent); }
+
+  .decision {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .decision .title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .decision .ctx { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .decision .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .decision .opt {
+    flex: 1 1 auto; min-width: 90px;
+    text-align: center;
+    padding: 8px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .decision .opt.go { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .decision .opt.hold { color: var(--cta); border-color: var(--cta); background: var(--cta-soft); }
+  .decision .opt.drop { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  .gate {
+    background: var(--card);
+    border: 2px solid var(--cta);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .gate .h {
+    font-size: 11px; font-weight: 600; color: var(--cta);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .gate .q { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .gate .sub { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .gate .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .gate .opt {
+    flex: 1 1 auto; min-width: 100px;
+    text-align: center;
+    padding: 10px 6px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    font-size: 12.5px; color: var(--muted);
+    font-weight: 600;
+  }
+  .gate .opt.a { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .gate .opt.b { color: var(--cta); border-color: var(--cta); background: var(--cta-soft); }
+  .gate .opt.c { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); }
+
+  .aide {
+    background: #F0EEE7;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+  }
+  .aide .h {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .aide p { margin: 0 0 6px; }
+  .aide p:last-child { margin: 0; }
+
+  footer.bot {
+    margin-top: 30px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--muted); text-align: center;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">기획전략실 · 사마의</div>
+  <h1>아이디어샘물 일일보고</h1>
+  <div class="date">2026-07-30 (목) · 7연속 통과 0건 · Q&A 왕복 0회 사이클 압축</div>
+</header>
+
+<!-- 1. 오늘의 요약 -->
+<section>
+  <h2>오늘의 요약</h2>
+  <div class="pipeline">
+    <div class="step"><div class="num">32</div><div class="lbl">수집<br>제이크</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num mid">2</div><div class="lbl">폴 필터<br>승계 (보류)</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num halt">0/2</div><div class="lbl">벤·제니<br>확정 컷</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num halt">—</div><div class="lbl">프로토<br>미실시</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num halt">—</div><div class="lbl">디자인<br>미실시</div></div>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">
+    <b>파이프라인 완주.</b> 수집 32 → 폴 1차 (컷 30·보류 2) → 벤 초안이 <b>07-28 대표 결재 대기 중인 규칙을 자율 선행 적용</b>해 차별화 축 웹 실측 완료 → 팀장 제니 <b>Q&A 왕복 없이 즉시 컷 확정</b>. 개발팀 승계 없음.
+  </p>
+  <div class="streak">
+    <div class="n">7</div>
+    <div class="t"><b>연속 통과 0건</b> · 세션 기준 8일째 (07-23 이후)</div>
+    <div class="sub">시장 실측 결과 · 파이프라인 결함 아님</div>
+  </div>
+</section>
+
+<!-- 2. 오늘의 하이라이트 -->
+<section>
+  <h2>오늘의 하이라이트</h2>
+  <div class="highlight">
+    <div class="lead">오늘의 밀 만한 것 · 아이템 아닌 · 팀 학습</div>
+    <h3>벤이 결재 나기 전에 규칙을 스스로 흡수해 사이클 타임을 반으로 줄였다 <span class="badge ok">Q&A 0회</span></h3>
+    <p>07-28에 제니가 상신한 규칙("차별화 4점 이상 매길 시 경쟁 SaaS 3개 이상 실측 문서화 필수")은 아직 대표 결재 대기 중이다. 그럼에도 벤은 오늘 초안 단계에서 <b>차별화 축을 먼저 웹으로 실측</b>했다. 결과: 초안 자체에 팀장 재판정에 필요한 근거가 이미 담겨 있어 제니가 Q&A 라운드 없이 곧장 컷 확정.</p>
+    <div class="why">
+      <p><b>왜 이게 하이라이트인가.</b></p>
+      <p>• <b>07-28: 2라운드 왕복 필요 → 07-30: 0라운드.</b> 사이클 타임 실측 압축. 결재 문서 위 정책이 실전에서 어떻게 작동할지의 실증 데이터.</p>
+      <p>• <b>규칙 명문화 전에 팀이 학습 흡수한 증거.</b> 이 사례 자체가 대표 결재의 실효성을 뒷받침한다 — 결재 결정에 반영할 실측 근거.</p>
+      <p>• <b>단, 결과는 여전히 통과 0건.</b> "잘 굴러갔다"와 "결과가 좋았다"는 다르다. 팀 학습은 확인됐고, 시장은 여전히 안 밀린다. 오늘 판단해야 할 진짜는 후자다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 후보 상세 -->
+<section>
+  <h2>후보 상세 · 폴 승계 2건 (양측 컷 확정)</h2>
+
+  <details class="item cut">
+    <summary>
+      <span class="rank cut">최종 컷 · 삼중</span>
+      <div>
+        <div class="summary-title">[12] 인보이스 자동 독촉 (프리랜서·소상공인)</div>
+        <div class="summary-sub">총 20점 · C · 지불 3 + 차별화 2 + C 25 미달</div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">"chasing late payments has become a kind of unofficial second job—one you definitely didn't apply for" — 대기업 고객 상대 특히 절박. pdocherty·Fiverr 등 다수 인용.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단 (벤 초안 · 웹 실측)</div>
+          <div class="v">필요 4·타깃 3·지속 4·차별 <b>2</b>·지불 <b>3</b>·1인 4 · 총 20 · C. <b>국제 카테고리 성숙 실측:</b> FreshBooks Plus $30/월 자동 리마인더 내장 · Chaser $40/월~ 전용 chasing + collections · Plutio 3회 자동 리마인더 + late fee terms · QuickBooks 미국 표준 · RemindFox Chaser 경량. 국내는 SmartBill·세모장부·삼쩜삼 웹 검색만으론 자동 독촉 여부 미확정 — 로그인·세일즈 문의 수준 실측 필요.</div>
+        </div>
+        <div class="stage cta">
+          <div class="k">팀장 재판정 (Q&A 왕복 0회)</div>
+          <div class="v"><b>컷 확정 · 조건부 보류 안 함.</b> 국제 카테고리 성숙 + 국내 프리랜서 무료 문화 이중 벽. 무한 유예 리스크. 다만 벤이 남긴 <b>"국내 특화 서브도메인"</b>(스마트스토어 정산·유튜버 광고비·강사 강연료)은 살려서 다음 재수집 때 제이크에게 별개 후보로 요청.</div>
+        </div>
+        <div class="stage halt">
+          <div class="k">프로토타입 · 디자인</div>
+          <div class="v"><span class="badge halt">미실시</span> 승계 없음.</div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <details class="item cut">
+    <summary>
+      <span class="rank cut">최종 컷 · 사중</span>
+      <div>
+        <div class="summary-title">[15] Etsy·Shopify 주문 통합 (미국 셀러)</div>
+        <div class="summary-sub">총 19점 · C · 20 미만 자동 컷 + 차별화 1 + 1인 감당 2</div>
+      </div>
+    </summary>
+    <div class="body">
+      <div class="flow">
+        <div class="stage">
+          <div class="k">원본 불편</div>
+          <div class="v">"Etsy Integration with Shopify doesn't work with Etsy for order integration, with order management unavailable for US sellers across all integration service providers" — CedCommerce Shopify App Store 리뷰 raw.</div>
+        </div>
+        <div class="stage">
+          <div class="k">시장 판단 (벤 초안 · 웹 실측)</div>
+          <div class="v">필요 4·타깃 3·지속 5·차별 <b>1</b>·지불 4·1인 <b>2</b> · 총 19 · C. <b>정면 강자 실측:</b> DPL(Digital Product Labs) 4.9-star · <b>8000+ active merchants · 700+ top-rated · 7년+ 운영</b> · Sellbery·QuickSync·Startbit 등 다수. CedCommerce 특정 벤더 이슈 ≠ 카테고리 공백 — DPL이 이미 매움.</div>
+        </div>
+        <div class="stage cta">
+          <div class="k">팀장 재판정 (Q&A 왕복 0회)</div>
+          <div class="v"><b>컷 확정.</b> DPL 8000+ 머천트는 반박 여지 없음. 미국 셀러 CS 시차·언어는 실운영 없이 검증 불가한 근본 제한 — 유예 대상 아님.</div>
+        </div>
+        <div class="stage halt">
+          <div class="k">프로토타입 · 디자인</div>
+          <div class="v"><span class="badge halt">미실시</span> 승계 없음.</div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <p style="font-size:12px;color:var(--muted);margin:8px 4px 0;">
+    폴 컷 30건은 사유 견고. 제이크 라운드 1 뒤집기 시도 → 실패 인정 완료. 벤 재검증에서도 놓친 강 신호 없음. 재수록 생략.
+  </p>
+</section>
+
+<!-- 3-b. 채널 분포 -->
+<section>
+  <h2>수집 폭 · 채널 분포</h2>
+  <table class="tally">
+    <tr>
+      <th>영역</th><th>건수</th><th>비고</th>
+    </tr>
+    <tr><td>지식노동·AI 워크플로</td><td class="n">5</td><td>Google Gemini 정면 침투 확인</td></tr>
+    <tr><td>개발자 도구·CI/CD</td><td class="n">5</td><td>전 세션 대비 편중 완화</td></tr>
+    <tr><td>자영업·소상공인 (국내)</td><td class="n">3</td><td>정책·행정 리스크</td></tr>
+    <tr><td>이커머스·마켓플레이스</td><td class="n">3</td><td>DPL 등 강자 다수</td></tr>
+    <tr><td>크리에이터·콘텐츠</td><td class="n">3</td><td>YouTube 자체 개선 흐름</td></tr>
+    <tr><td>생산성 앱 소비자</td><td class="n">3</td><td>카테고리 관찰 중심</td></tr>
+    <tr><td>여행·개인 생활</td><td class="n">3</td><td>TripIt류 실패 이력</td></tr>
+    <tr><td>특수 니치·소상공인 특화</td><td class="n">7</td><td>노가다장부류 니치 확인</td></tr>
+  </table>
+  <p style="font-size:12px;color:var(--muted);margin:8px 4px 0;">
+    <b>국내 원문 비중:</b> 6/32. 완전 국내 커뮤니티(클리앙·펨코·지식iN) raw 원문은 웹 검색만으론 도달 못 함 — 제이크 한계 명시. 이건 다음 이슈 섹션.
+  </p>
+</section>
+
+<!-- 4. 오늘의 이슈 -->
+<section>
+  <h2>오늘의 이슈</h2>
+
+  <div class="issue">
+    <div class="h">7연속 통과 0건 · 대표 결재 8일째 대기</div>
+    <p>07-28 상신한 규칙("차별화 4점 이상 매길 시 경쟁 SaaS 3개 이상 실측 문서화 필수") 결재가 오늘로 3일째, 통과 0건 기준으론 8일째. 제니 판단: <b>재촉 안 함(관계 부담), 근거만 append</b>. 파이프라인 유지 결정 — 시장이 그런 상태라는 실측 결과이지 파이프라인 결함이 아님. 참모 견해: 그 판단 자체는 정합하나, 결재가 늦어질수록 <b>다음 재수집 방향</b>이 규칙 명문화 전에 진행되어야 하는 애매함 남음.</p>
+  </div>
+
+  <div class="issue note">
+    <div class="h">한국 커뮤니티 raw 접근 한계 · 별도 결재 상신 예정</div>
+    <p>제이크 라운드 1에서 자체 한계 명시: 클리앙·펨코·지식iN raw 게시글은 웹 검색만으론 도달 못 함(소개글까지만). 국내 특화 니치가 다음 사이클 방향인 이상 이 인프라 공백은 곧 병목. 제니 판정: <b>07-28 결재와 병합하지 않고 별도 상신</b>(안건 성격 상이·대기 안건에 신규 붙이면 결정 지연·구체안 미비). 다음 세션 <b>고객센터팀(폴·제이크)이 API·스크레이핑·유료 서비스 옵션 초안화 후 정식 결재</b> 상신 예정.</p>
+  </div>
+
+  <div class="issue info">
+    <div class="h">긍정 관찰 · 팀 학습 사례 축적</div>
+    <p>벤이 결재 대기 중인 규칙을 자율 선행 적용 → 차별화 축 웹 실측을 초안 단계에서 완료 → 제니 Q&A 왕복 0회. <b>07-28은 2라운드 왕복 필요, 07-30은 0라운드.</b> 규칙 명문화 이전 팀이 흡수한 실증. 대표 결재 근거로 이 문서에 첨부됨.</p>
+    <p style="margin-top:4px;">부수 관찰: 폴 워크로그 라인 미기재(파일 append는 완료). 결재 사안 아님 · 마케팅팀 내부에서 다음 세션 팀장이 절차 준수 요청 예정.</p>
+  </div>
+</section>
+
+<!-- 5. 대표 판단 요청 -->
+<section>
+  <h2>대표 판단 요청</h2>
+
+  <div class="gate">
+    <div class="h">Gate · 07-28 상신 결재 · 대기 8일째</div>
+    <div class="q">"차별화 4점 이상 매길 시 경쟁 SaaS 3개 이상 실측 문서화 필수" 규칙 명문화 · 어떻게 처리하실지?</div>
+    <div class="sub">07-30 세션이 <b>결재 나기 전에도 벤이 자율 선행 적용해 Q&A 왕복 0회로 컷 확정</b> 실증. 규칙이 시장에서 잘 작동한다는 데이터 확보. 다만 통과 0건 자체는 규칙과 무관하게 지속 — 시장 실측 결과.</div>
+    <div class="opts">
+      <div class="opt a">규칙 명문화 승인 (팀 자율 적용을 정식 규정으로)</div>
+      <div class="opt b">규칙 조정 후 승인 (실측 기준 완화·엄격 방향으로 손질)</div>
+      <div class="opt c">보류 (더 지켜본 뒤 결정)</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:10px 0 0;">
+      <b>참모 권고: 옵션 a.</b> 팀이 이미 실전 적용해 사이클 압축 실증했고, 이번 세션 두 건([12][15]) 모두 규칙이 정확히 컷 결론에 도달시킴. 조정 여지가 실측 없이 도출될 상태는 아직 아님.
+    </p>
+  </div>
+
+  <div class="gate">
+    <div class="h">Gate · 7연속 통과 0건 대응</div>
+    <div class="q">파이프라인 유지 / 재수집 방향 전환 / 잠시 중단?</div>
+    <div class="sub">제니는 유지 판정("시장 실측 결과이지 파이프라인 결함 아님"). 다만 8일째 개발·디자인팀 유휴. 지금 필요한 건 <b>수집 방향의 전환</b>일 수 있음 — 한국 커뮤니티 raw 접근 인프라 없이 국내 특화 니치 발굴은 구조적으로 한계.</div>
+    <div class="opts">
+      <div class="opt a">유지 (억지 승격 없음 원칙 · 현재 스케줄 계속)</div>
+      <div class="opt b">방향 전환 (한국 raw 접근 결재 선처리 후 국내 특화만)</div>
+      <div class="opt c">일시 중단 (규칙·인프라 정리까지 파이프라인 pause)</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:10px 0 0;">
+      <b>참모 권고: 옵션 b.</b> 유지(옵션 a)는 정합하나 다음 세션도 같은 결과 확률 높음(수집 채널 그대로). 중단(c)은 팀 학습 흐름 끊김. 방향 전환이 실질 진전 가능성 최대.
+    </p>
+  </div>
+
+  <div class="decision">
+    <div class="title">[12] 인보이스 자동 독촉 · 컷 확정본</div>
+    <div class="ctx">마케팅팀 컷 확정. 국내 특화 서브도메인(스마트스토어 정산·유튜버 광고비·강사 강연료)은 다음 재수집 대상으로 살림.</div>
+    <div class="opts">
+      <div class="opt drop">컷 유지 (참모 · 마케팅팀 일치)</div>
+      <div class="opt hold">서브도메인 재수집 반영 대기</div>
+      <div class="opt go">예외 부활 (권고 안 함)</div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <div class="title">[15] Etsy·Shopify 주문 통합 · 컷 확정본</div>
+    <div class="ctx">DPL 8000+ 머천트 정면 강자 · 미국 셀러 CS 시차·언어 근본 제한. 대표 부활 판단만 남음.</div>
+    <div class="opts">
+      <div class="opt drop">컷 유지 (참모 · 마케팅팀 일치)</div>
+      <div class="opt hold">차기 재검토</div>
+      <div class="opt go">예외 부활 (권고 안 함)</div>
+    </div>
+  </div>
+</section>
+
+<!-- 참모 의견 -->
+<section>
+  <h2>참모 의견</h2>
+  <div class="aide">
+    <div class="h">사마의 · 정리</div>
+    <p><b>결론.</b> 오늘 실질 안건은 둘이다 — (1) <b>07-28 결재 처리</b>(대기 8일째, 오늘 벤 실증으로 근거 충분), (2) <b>7연속 통과 0건에 대한 방향 전환 여부</b>. [12][15] 개별 컷 결정은 부수 안건이다.</p>
+    <p><b>사실 확인.</b> 07-23 이후 7연속 통과 0건은 <b>사실</b>. 벤이 규칙을 선행 적용해 Q&A 왕복 0회로 컷 확정한 것도 <b>사실</b>. 시장 실측(FreshBooks·Chaser·DPL 등)은 <b>사실</b>. 한국 커뮤니티 raw 접근 실패는 제이크 자체 인정한 <b>사실</b>.</p>
+    <p><b>전제 검증.</b> 마케팅팀이 깔고 있는 전제 — "통과 0건은 시장 실측 결과이지 파이프라인 결함이 아님" — 은 정합하다. 다만 다음 층 전제 — "현재 수집 채널만으로 국내 특화 니치를 계속 발굴하면 된다" — 는 검증되지 않았다. 제이크가 이미 한국 raw 접근 한계를 명시했고, 그 상태로 다음 세션을 돌리면 같은 결과가 나올 확률이 높다. <b>전제 붕괴 지점</b>이다.</p>
+    <p><b>대안 비교.</b></p>
+    <p>ⓐ 유지 — 안전. 팀 규율·학습 지속. 대신 다음 세션도 통과 0건 반복 확률 높음.<br>
+    ⓑ 방향 전환(권고) — 한국 raw 접근 결재를 먼저 처리하고, 그 위에서 국내 특화 니치를 발굴. 진짜 병목을 푸는 순서. 대신 결재 처리 대기 시간 발생.<br>
+    ⓒ 일시 중단 — 팀 학습 흐름 끊기고 심리적 손실 큼. 지금 상황엔 과함.</p>
+    <p><b>권고.</b> 옵션 ⓑ. 순서는 이렇다 — 07-28 결재 처리 → 한국 raw 접근 결재(마케팅·고객센터 별도 상신) 대기 → 그 다음 재수집. 그 사이 개발·디자인팀 유휴는 <b>다른 프로젝트로 로테이션</b> 가능(웹유틸 등). 유휴 감수해서라도 파이프라인 순서를 정리하는 편이 다음 세션 통과 확률을 실질적으로 올린다.</p>
+    <p><b>유보 없이 정리.</b> "더 지켜본다"는 지금 상황에선 결론이 아니다. 이번 세션이 사이클 압축 실증까지 확보한 이상, 결재를 처리해도 될 만큼 데이터는 쌓였다.</p>
+  </div>
+</section>
+
+<footer class="bot">
+  기획전략실 · 사마의 · 2026-07-30 05:34 KST<br>
+  입력: 00-수집리스트.md · 01-시장필터결과.md (제니 재판정 확정본) · 02·03 미실시
+</footer>
+
+</div>
+</body>
+</html>
