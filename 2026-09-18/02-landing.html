@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>배달정산 — 수수료 항목별 분해</title>
+  <style>
+    :root {
+      --bg: #F8FAFB;
+      --surface: #FFFFFF;
+      --surface2: #F1F5F9;
+      --accent: #1A6B3A;
+      --accent-l: #22A858;
+      --accent-light: #E8F7EE;
+      --text: #1A2332;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --red: #EF4444;
+      --green: #22A858;
+      --warn: #F59E0B;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; line-height: 1.7; }
+
+    /* NAV */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 1.5rem; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-weight: 800; font-size: 1.1rem; color: var(--accent); letter-spacing: -0.02em; }
+    .nav-cta { background: var(--accent); color: #fff; padding: 0.55rem 1.1rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; text-decoration: none; border: none; cursor: pointer; }
+
+    /* LAYOUT */
+    section { padding: 4rem 1.5rem; max-width: 760px; margin: 0 auto; }
+    h1 { font-size: clamp(1.7rem, 4.5vw, 2.5rem); font-weight: 800; line-height: 1.25; letter-spacing: -0.03em; color: var(--text); }
+    h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+    p { color: var(--muted); font-size: 1rem; }
+
+    /* HERO */
+    .hero { text-align: center; padding-top: 5rem; }
+    .hero-badge { display: inline-block; background: var(--accent-light); color: var(--accent); border-radius: 999px; font-size: 0.8rem; font-weight: 700; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem; }
+    .hero p { max-width: 520px; margin: 1rem auto 2.5rem; font-size: 1.05rem; }
+    .signup-form { display: flex; gap: 0.5rem; max-width: 380px; margin: 0 auto; }
+    .signup-form input {
+      flex: 1; padding: 0.8rem 1rem; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 1rem; font-family: inherit; outline: none;
+    }
+    .signup-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,107,58,.12); }
+    .btn { padding: 0.8rem 1.3rem; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; transition: opacity .2s; white-space: nowrap; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { opacity: 0.87; }
+    .btn-outline { background: var(--surface); border: 1.5px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: var(--surface2); }
+    .hero-note { font-size: 0.82rem; color: var(--muted); margin-top: 0.9rem; opacity: 0.7; }
+
+    /* PAIN */
+    .quote-card { background: #FFF7ED; border-left: 3px solid var(--warn); border-radius: 0 12px 12px 0; padding: 1.4rem 1.75rem; margin: 2rem 0; }
+    .quote-card blockquote { font-size: 1.05rem; font-style: italic; color: var(--text); margin-bottom: 0.5rem; line-height: 1.6; }
+    .quote-card .src { font-size: 0.82rem; color: var(--muted); }
+
+    /* FEE BREAKDOWN VISUAL */
+    .fee-visual { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 1.5rem; margin: 2rem 0; }
+    .fee-title { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .fee-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.95rem; }
+    .fee-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .fee-label { color: var(--muted); }
+    .fee-amount { font-weight: 700; }
+    .fee-row.total { background: var(--accent-light); margin: 0.75rem -1rem -1.5rem; padding: 0.75rem 1rem; border-radius: 0 0 12px 12px; }
+    .fee-row.total .fee-label { color: var(--accent); font-weight: 700; }
+    .fee-row.total .fee-amount { color: var(--accent); font-size: 1.1rem; }
+    .minus { color: var(--red); }
+
+    /* COMPARISON */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 2rem 0; }
+    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 1.4rem; }
+    .card.before { border-color: #FECACA; background: #FFF5F5; }
+    .card.after { border-color: #BBF7D0; background: #F0FFF4; }
+    .card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; font-weight: 700; }
+    .card.before h3 { color: var(--red); }
+    .card.after h3 { color: var(--green); }
+    .card ul { list-style: none; }
+    .card ul li { padding: 0.3rem 0; font-size: 0.93rem; color: var(--muted); }
+    .card.before li::before { content: "✗ "; color: var(--red); }
+    .card.after li::before { content: "✓ "; color: var(--green); }
+
+    /* HOW IT WORKS */
+    .steps { display: flex; flex-direction: column; gap: 1.5rem; margin: 2rem 0; }
+    .step { display: flex; gap: 1.25rem; align-items: flex-start; }
+    .step-n { background: var(--accent); color: #fff; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; }
+    .step-body strong { display: block; margin-bottom: 0.2rem; font-size: 0.98rem; color: var(--text); }
+    .step-body p { font-size: 0.9rem; margin: 0; }
+    .guide-box { background: var(--surface2); border-radius: 10px; padding: 1rem 1.25rem; margin: 0.75rem 0; font-size: 0.87rem; color: var(--muted); line-height: 1.6; }
+    .guide-box strong { color: var(--text); }
+
+    /* ALIMTOK MOCKUP */
+    .alimtok { background: #FEE500; border-radius: 14px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; max-width: 320px; }
+    .alimtok .sender { font-size: 0.78rem; font-weight: 700; color: #3A1D1D; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+    .alimtok .msg { font-size: 0.88rem; color: #1A1A1A; line-height: 1.6; }
+    .alimtok .msg strong { font-weight: 700; }
+
+    /* OBJECTION */
+    .faq { display: flex; flex-direction: column; gap: 1rem; margin: 2rem 0; }
+    .faq-item { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.4rem; }
+    .faq-item .q { font-weight: 700; color: var(--text); margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .faq-item .a { font-size: 0.92rem; color: var(--muted); margin: 0; }
+
+    /* PRICING */
+    .plan { background: var(--surface); border: 2px solid var(--accent); border-radius: 16px; padding: 2rem; max-width: 380px; margin: 2rem auto; }
+    .plan-tier { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.5rem; font-weight: 700; }
+    .plan-price { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 0.3rem; }
+    .plan-price span { font-size: 1rem; font-weight: 400; color: var(--muted); }
+    .plan-desc { font-size: 0.88rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .plan ul { list-style: none; margin-bottom: 1.75rem; }
+    .plan ul li { padding: 0.35rem 0; font-size: 0.92rem; color: var(--text); }
+    .plan ul li::before { content: "✓ "; color: var(--green); font-weight: 700; }
+
+    /* FOOTER CTA */
+    .cta-box { background: var(--accent); border-radius: 20px; padding: 3.5rem 2rem; text-align: center; margin: 0 0 2rem; color: #fff; }
+    .cta-box h2 { color: #fff; }
+    .cta-box p { color: rgba(255,255,255,0.75); margin: 0.75rem auto 2rem; max-width: 380px; }
+    .cta-box input { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: #fff; }
+    .cta-box input::placeholder { color: rgba(255,255,255,0.6); }
+    .cta-box input:focus { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.2); }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 2rem 1.5rem; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); text-decoration: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 560px) {
+      .signup-form { flex-direction: column; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">배달정산</div>
+  <a href="app/index.html" class="nav-cta">무료로 써보기 →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">배달 매출 75%+ 사장님을 위한 수수료 분해 + 정산 알림</div>
+  <h1>2만원 팔면 내 손에<br>얼마 남는지, 모르고 계시죠?</h1>
+  <!-- 마케팅팀 카피 대기: 정산 지연 알림 문구는 기능 범위 제외로 삭제(2026-09-27) -->
+  <div id="signup">
+    <a href="app/index.html" class="btn btn-primary">무료로 써보기 →</a>
+  </div>
+  <!-- 마케팅팀 카피 대기: 요금 미정 -->
+
+</section>
+
+<!-- PAIN -->
+<section>
+  <h2>사장님만 모르고 계셨던 숫자</h2>
+  <div class="quote-card">
+    <blockquote>"2만원에 팔았는데 실제로 받은 건 8,166원이었습니다. 중개수수료·배달비·마케팅비가 다 빠지고 나니까요."</blockquote>
+    <p class="src">— 클리앙 park 실사용자 · 2026년</p>
+  </div>
+  <p>배달앱 3사 대시보드는 각각 로그인해서 봐야 하고, 수수료가 어디서 얼마 빠지는지는 알려주지 않습니다. 통장을 열어봐야 정산이 들어왔는지 알 수 있고요.</p>
+
+  <div class="fee-visual" style="margin-top:2rem">
+    <div class="fee-title">배달앱 배달정산이 보여주는 것 — 오늘 주문 예시</div>
+    <div class="fee-row"><span class="fee-label">총 판매금액</span><span class="fee-amount">20,000원</span></div>
+    <div class="fee-row"><span class="fee-label">중개수수료 7.8%</span><span class="fee-amount minus">−1,560원</span></div>
+    <div class="fee-row"><span class="fee-label">배달비</span><span class="fee-amount minus">−3,400원</span></div>
+    <div class="fee-row"><span class="fee-label">결제수수료 1.5%</span><span class="fee-amount minus">−300원</span></div>
+    <div class="fee-row"><span class="fee-label">프로모션 할인 분담</span><span class="fee-amount minus">−6,574원</span></div>
+    <div class="fee-row total"><span class="fee-label">실 수령액</span><span class="fee-amount">8,166원 (40.8%)</span></div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section>
+  <h2>배달정산 쓰면 뭐가 달라지나요</h2>
+  <div class="grid-2">
+    <div class="card before">
+      <h3>지금</h3>
+      <ul>
+        <li>3사 각각 로그인해서 확인</li>
+        <li>수수료 항목 뭉뚱그려 표시</li>
+        <li>정산 지연 통장 확인 전까지 모름</li>
+        <li>정부 지원 서류 직접 캡처</li>
+      </ul>
+    </div>
+    <div class="card after">
+      <h3>배달정산 이후</h3>
+      <ul>
+        <li>CSV 한 장으로 3사 한 번에</li>
+        <li>수수료 항목별 원 단위 분해</li>
+        <!-- 마케팅팀 카피 대기: 정산 지연 알림·정부 지원 서류 자동 생성은 기능 범위 제외로 삭제(2026-09-27) -->
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <h2>딱 2단계, 5분이면 됩니다</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <strong>사장님센터에서 정산 자료 다운로드</strong>
+        <div class="guide-box">
+          <strong>배민:</strong> 사장님센터 → 정산·매출 → 부가세 신고자료 → 엑셀 다운로드<br>
+          <strong>요기요:</strong> 셀프서비스 → 정산/세금 → 부가세신고자료 → 다운로드<br>
+          <strong>쿠팡이츠:</strong> 파트너스 → 정산관리 → 매출내역서 → 다운로드
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <strong>배달정산에 파일 업로드 (1분)</strong>
+        <p>다운로드 받은 파일을 그대로 올리시면 됩니다. 배달앱 종류 선택 후 파일 첨부 — 자동으로 항목별 분해가 됩니다.</p>
+      </div>
+    </div>
+    <!-- 마케팅팀 카피 대기: 카카오톡 알림 발송 단계는 기능 범위 제외로 삭제(2026-09-27) -->
+  </div>
+</section>
+
+<!-- OBJECTION -->
+<section>
+  <h2>이런 질문이 있으실 거예요</h2>
+  <div class="faq">
+    <div class="faq-item">
+      <p class="q">"저 캐시노트 쓰고 있는데요?"</p>
+      <p class="a">캐시노트는 카드 매출 통합·세무 편의·빠른 정산에 강합니다. <!-- 마케팅팀 카피 대기: 배달정산과의 차별점·병행 사용 안내 문구는 기능 확정 후 작성(2026-09-27) --></p>
+    </div>
+    <div class="faq-item">
+      <p class="q">"배달앱에서 다 보여주지 않나요?"</p>
+      <p class="a">배달앱 3사 각각의 대시보드는 자기 채널 매출만 보여줍니다. 수수료 항목별 분해와 3사 합산은 어느 앱도 제공하지 않습니다.</p>
+    </div>
+    <!-- 마케팅팀 카피 대기: 정부 지원 서류 자동 생성 FAQ는 기능 범위 제외로 삭제(2026-09-27) -->
+  </div>
+</section>
+
+<!-- 마케팅팀 카피 대기: 요금 섹션은 요금 모델 미정으로 삭제(2026-09-27) -->
+
+
+<footer>
+  <p><a href="app/index.html">무료로 써보기 →</a></p>
+  <p>© 2026 배달정산 · <!-- 마케팅팀 카피 대기: 개인정보처리방침·이용약관 페이지 준비 전까지 --> 업로드한 파일은 기기 밖으로 나가지 않습니다.</p>
+</footer>
+
+</body>
+</html>

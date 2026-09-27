@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>배달정산 도구 (v0) — 수수료 항목별 분해</title>
+<style>
+  :root {
+    --bg: #F8FAFB; --surface: #FFFFFF; --accent: #1A6B3A; --accent-light: #E8F7EE;
+    --text: #1A2332; --muted: #64748B; --border: #E2E8F0; --warn: #B45309; --warn-bg: #FFF7ED;
+    --red: #B91C1C; --red-bg: #FEF2F2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; line-height: 1.6; }
+  header { padding: 1rem 1.5rem; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  header h1 { margin: 0; font-size: 1.1rem; color: var(--accent); }
+  header a { color: var(--muted); font-size: 0.85rem; text-decoration: none; }
+  main { max-width: 640px; margin: 0 auto; padding: 1.5rem; }
+  .notice { background: var(--warn-bg); border-left: 3px solid #F59E0B; border-radius: 0 8px 8px 0; padding: 0.9rem 1.1rem; margin-bottom: 1.25rem; font-size: 0.88rem; }
+  .notice p { margin: 0.2rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  label.field { display: block; font-weight: 700; font-size: 0.9rem; margin: 0 0 0.4rem; }
+  select, input[type=file] { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: var(--surface); margin-bottom: 1rem; }
+  .headers { font-size: 0.82rem; color: var(--muted); margin: -0.5rem 0 1rem; }
+  .headers code { background: #F1F5F9; padding: 0.1rem 0.35rem; border-radius: 4px; }
+  .headers a { color: var(--accent); }
+  #result:empty { display: none; }
+  .meta { color: var(--muted); font-size: 0.85rem; margin: 0 0 0.5rem; }
+  table.summary { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  table.summary th { text-align: left; font-weight: 400; padding: 0.45rem 0; border-bottom: 1px solid var(--border); }
+  table.summary td { text-align: right; padding: 0.45rem 0; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  tr.fee td { color: var(--red); }
+  tr.subtotal th, tr.subtotal td { font-weight: 700; }
+  tr.total th, tr.total td { font-weight: 800; color: var(--accent); border-bottom: none; font-size: 1.05rem; padding-top: 0.7rem; }
+  .erosion { font-weight: 700; margin: 0.75rem 0; }
+  .warn { color: var(--warn); font-size: 0.88rem; }
+  .error { background: var(--red-bg); border: 1px solid #FECACA; border-radius: 8px; padding: 1rem; color: var(--red); }
+  .error p { margin: 0.3rem 0 0; }
+  .error .hint { color: var(--muted); font-size: 0.85rem; }
+  label.deposit { display: flex; align-items: center; gap: 0.4rem; margin-top: 1rem; font-size: 0.92rem; }
+  .storage-status { color: var(--warn); font-size: 0.82rem; margin: 0.3rem 0 0; }
+  .storage-status:empty { display: none; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 1rem 1.5rem 2rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>배달정산 도구 (v0)</h1>
+  <a href="../02-landing.html">소개 페이지</a>
+</header>
+
+<main>
+  <div class="notice">
+    <p><strong>파일은 기기 밖으로 나가지 않습니다.</strong> 서버로 전송되지 않고 이 브라우저 안에서만 계산됩니다.</p>
+    <p><strong>미검증 상태:</strong> 배민·쿠팡이츠·요기요의 실제 정산 파일로 아직 확인하지 않았습니다. 아래 열 이름은 가정한 것이라, 실제 파일의 열 이름이 다르면 계산하지 않고 멈춥니다.</p>
+  </div>
+
+  <div class="card">
+    <label class="field" for="platformSelect">배달앱</label>
+    <select id="platformSelect">
+      <option value="baemin">배달의민족</option>
+      <option value="coupangeats">쿠팡이츠</option>
+      <option value="yogiyo">요기요</option>
+    </select>
+    <p class="headers">필요한 열: <code id="headerHint"></code><br>
+      형식이 궁금하면 <a href="#" id="templateLink">예시 CSV 내려받기</a> (예시 값이며 실제 정산이 아닙니다)</p>
+
+    <label class="field" for="csvFile">정산 CSV 파일</label>
+    <input type="file" id="csvFile" accept=".csv,text/csv">
+  </div>
+
+  <div id="result" class="card" aria-live="polite"></div>
+</main>
+
+<footer>계산 결과는 참고용입니다. 실제 입금액은 각 배달앱 정산 내역으로 확인하세요.</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
